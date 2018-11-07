@@ -12,7 +12,7 @@ SRCDIR    = src
 SRCFILES  = main.cpp Self.cpp
 SRCS      = $(addprefix $(SRCDIR),$(SRCFILES))
 
-OBJDIR    = obj
+OBJDIR    = obj/
 OBJFILES  = $(SRCFILES:.cpp=.o)
 OBJS      = $(addprefix $(OBJDIR),$(OBJFILES))
 

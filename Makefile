@@ -22,24 +22,27 @@ CXXFLAGS  = -std=c++11 $(WARNINGS) $(OTHERS)
 CFLAGS    = `sdl-config --libs` -lGL -lGLU -lGLEW
 EXEC      = Self
 
-.PHONY: all build first clean dirs
+MAKEFLAGS = -j
+
+.PHONY: all run build clean
 
 all: build
 
-# To be executed before the very first build
-first: dirs
-
+run: build
+	./$(EXEC)
 build: $(OBJS)
 	$(CXX) $(OBJS) -o $(EXEC) $(CFLAGS)
 
 clean:
 	rm -f $(OBJDIR)*.o $(EXEC)
 
-dirs:
-	mkdir $(OBJDIR)
-
 $(OBJDIR)%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+$(OBJS): | $(OBJDIR)
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
 c: clean
 

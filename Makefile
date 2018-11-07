@@ -5,44 +5,41 @@
 
 CXX       = g++ 
 WARNINGS  = -Wall -Wextra -pedantic
-OTHERS    = -g `sdl-config --cflags`
+OTHERS    = `sdl-config --cflags`
 
-LFLAGS    =
-YFLAGS    = --defines=gen/y.tab.h --debug --verbose
-LDFLAGS   = -g
-LOADLIBS  = `sdl-config --libs` -lGL -lGLU -lGLEW
 
-SRCDIR    = src/
+SRCDIR    = src
 SRCFILES  = main.cpp Self.cpp
 SRCS      = $(addprefix $(SRCDIR),$(SRCFILES))
 
-OBJDIR    = obj/
+OBJDIR    = obj
 OBJFILES  = $(SRCFILES:.cpp=.o)
 OBJS      = $(addprefix $(OBJDIR),$(OBJFILES))
 
 IDIRS     = -I$(SRCDIR)
-CXXFLAGS  = -std=c++11 $(WARNINGS) $(OTHERS) $(IDIRS)
 
+CXXFLAGS  = -std=c++11 $(WARNINGS) $(OTHERS)
+CFLAGS    = `sdl-config --libs` -lGL -lGLU -lGLEW
 EXEC      = Self
 
-.PHONY: all first clean dirs
+.PHONY: all build first clean dirs
 
-all: $(EXEC)
+all: build
 
 # To be executed before the very first build
 first: dirs
 
-$(EXEC): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LOADLIBS)
+build: $(OBJS)
+	$(CXX) $(OBJS) -o $(EXEC) $(CFLAGS)
 
 clean:
-	rm -f $(OBJDIR){*.o}* $(EXEC)
+	rm -f $(OBJDIR)*.o $(EXEC)
 
 dirs:
 	mkdir $(OBJDIR)
 
 $(OBJDIR)%.o: $(SRCDIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 c: clean
 

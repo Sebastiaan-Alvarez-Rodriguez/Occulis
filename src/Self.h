@@ -1,5 +1,9 @@
 #ifndef SELF
 #define SELF
+// https://github.com/hmazhar/moderngl_camera/blob/master/camera.cpp
+// https://learnopengl.com/Getting-started/Camera
+// http://in2gpu.com/2016/03/14/opengl-fps-camera-quaternion/
+
 #include <GL/glew.h>
 #include <GL/glu.h>
 #include <glm/glm.hpp>
@@ -16,7 +20,10 @@ public:
 
 private:
     inputstate& in;
-    GLuint programID, squareVertexID, squareColorID;
+    GLuint programID, heightmapVertexID, squareColorID;
+    size_t screen_width = 800, screen_height = 600;
+
+    void cameraInit(glm::vec3 cam_pos, glm::vec3 look_pos, glm::vec3 head_rot);
     
 };
 #endif

@@ -10,6 +10,7 @@
 
 size_t width = 800, height = 600;
 float fps_lim = 60;
+const SDL_Surface* screensurface;
 
 static inline void fpsCounter(size_t& frames, std::chrono::high_resolution_clock::time_point& program_start) {
     auto now = std::chrono::high_resolution_clock::now();
@@ -37,14 +38,14 @@ const SDL_Surface* createWindow() {
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
     SDL_WM_SetCaption("Self2", NULL);
 
-    SDL_Surface* screensurface;
-    if((screensurface = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | 
-                                                            SDL_GL_DOUBLEBUFFER | 
-                                                            SDL_OPENGL | SDL_RESIZABLE)) == NULL)
+    const SDL_Surface* const screensurf = 
+    SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL 
+        | SDL_RESIZABLE);
+    if(screensurf == NULL)
         throw std::runtime_error("SDL videomode init failed");
     if (glewInit() != GLEW_OK)
         throw std::runtime_error("GLEW init failed");
-    return screensurface;
+    return screensurf;
 }
 
 void mainEventHandler(inputstate* in, bool* running) {
@@ -55,7 +56,8 @@ void mainEventHandler(inputstate* in, bool* running) {
     while(SDL_PollEvent(&sdlevent)) {
         switch(sdlevent.type) {
             case SDL_KEYDOWN:
-                if (sdlevent.key.keysym.sym == SDLK_ESCAPE) {
+                if (sdlevent.key.keysym.sym == SDLK_ESCAPE
+                    || sdlevent.key.keysym.sym == SDLK_q) {
                     *running = false;
                     return;
                 } else {
@@ -78,7 +80,6 @@ void mainEventHandler(inputstate* in, bool* running) {
 }
 
 int main() {
-    const SDL_Surface* screensurface;
     try {
         screensurface = createWindow();
     } catch(std::runtime_error e) {

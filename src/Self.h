@@ -22,8 +22,10 @@ private:
     inputstate& in;
     GLuint programID, heightmapVertexID, squareColorID;
     size_t screen_width = 800, screen_height = 600;
-
-    void cameraInit(glm::vec3 cam_pos, glm::vec3 look_pos, glm::vec3 head_rot);
-    
+    glm::vec3 cam_pos = {200, 200, 200};
+    float cam_theta = M_PI /4*3, cam_phi = 0;
+    float cam_speed = 10.0f;
+    void cameraInit(glm::vec3 look_pos);
+    void cam_update();
 };
 #endif

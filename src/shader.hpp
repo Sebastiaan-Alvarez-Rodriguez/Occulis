@@ -59,28 +59,28 @@ GLuint createShader(const char* file_path, GLenum shadertype) {
 GLuint createProgram(std::vector<GLuint> ids) {
     // Link the program
     printf("Linking program\n");
-    GLuint ProgramID = glCreateProgram();
+    GLuint program_id = glCreateProgram();
     for (GLuint id : ids)
-        glAttachShader(ProgramID, id);
-    glLinkProgram(ProgramID);
+        glAttachShader(program_id, id);
+    glLinkProgram(program_id);
 
     // Check the program
     printf("Checking program\n");
     GLint Result = GL_FALSE;
     int InfoLogLength;
-    glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-    glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    glGetProgramiv(program_id, GL_LINK_STATUS, &Result);
+    glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &InfoLogLength);
     if ( InfoLogLength > 0) {
         std::string ProgramErrorMessage;
-        glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        glGetProgramInfoLog(program_id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
         throw std::runtime_error("Linking errors:\n"+ProgramErrorMessage);
     }
     for (GLuint id : ids)
-        glDetachShader(ProgramID, id);
+        glDetachShader(program_id, id);
     for (GLuint id : ids)
     glDeleteShader(id);
 
-    return ProgramID;
+    return program_id;
 }
 
 GLuint LoadShaders(const char* vertex_file_path, const char * fragment_file_path) {

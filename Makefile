@@ -4,12 +4,12 @@
 #
 
 CXX       = g++ 
-WARNINGS  = -Wall -Wextra -pedantic
+WARNINGS  = -Wall -Wextra -pedantic -g
 OTHERS    = `sdl-config --cflags`
 
 
 SRCDIR    = src
-SRCFILES  = main.cpp Self.cpp
+SRCFILES  = main.cpp Self.cpp Camera.cpp
 SRCS      = $(addprefix $(SRCDIR),$(SRCFILES))
 
 OBJDIR    = obj/

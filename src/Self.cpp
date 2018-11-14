@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Self.h"
 #include <cmath>
+#include "Camera.h"
 #include "inputstate.h"
 #include "shader.hpp"
 #include "picopng.hpp"
@@ -10,23 +11,44 @@ struct rgba {
     unsigned char r, g, b, a;
 };
 
-Self::Self(inputstate& i) : in(i) {
-    programID = LoadShaders("_shaderV.c", "_shaderF.c");
-    glUseProgram(programID);
-
+Self::Self(inputstate& i): in(i) {
+    program_id = LoadShaders("_shaderV.c", "_shaderF.c");
+    glUseProgram(program_id);
+    cam.init(program_id, "view");
+    
     size_t w, h;
     std::vector<unsigned char> buffer, heightmap;
     loadFile(buffer, "terrain_heightmap.png");
     if (decodePNG(heightmap, w, h, &buffer[0], buffer.size(), true)!=0)
         throw std::runtime_error("picopng exception");
-    std::vector<float> hallo(512*512*4, 1);
+    std::vector<float> hallo(512*512*4*6, 1);
 
     for (size_t z = 0; z < 512; ++z)
         for (size_t x = 0; x < 512; ++x) {
-            hallo[(z * 512 + x) * 4 + 0] = x;
-            hallo[(z * 512 + x) * 4 + 1] = (float) heightmap[(z * 512 + x)*4];
-            hallo[(z * 512 + x) * 4 + 2] = z;
-            // hallo[(z * 512 + x) * 4 + 0] = 1;
+            hallo[(z * 512 + x) * 24 + 0] = x;
+            hallo[(z * 512 + x) * 24 + 1] = (float) heightmap[(z * 512 + x)*4];
+            hallo[(z * 512 + x) * 24 + 2] = z;
+            // hallo[(z * 512 + x) * 12 + 3] = 1;
+            hallo[(z * 512 + x) * 24 + 4] = x+1;
+            hallo[(z * 512 + x) * 24 + 5] = (float) heightmap[(z * 512 + (x+1))*4];
+            hallo[(z * 512 + x) * 24 + 6] = z;
+            // hallo[(z * 512 + x) * 12 + 7] = 1;
+            hallo[(z * 512 + x) * 24 + 8] = x+1;
+            hallo[(z * 512 + x) * 24 + 9] = (float) heightmap[((z+1) * 512 + (x+1))*4];
+            hallo[(z * 512 + x) * 24 + 10] = z+1;
+            // hallo[(z * 512 + x) * 12 + 11] = 1;
+            hallo[(z * 512 + x) * 24 + 12] = x+1;
+            hallo[(z * 512 + x) * 24+ 13] = (float) heightmap[((z+1) * 512 + (x+1))*4];
+            hallo[(z * 512 + x) * 24 + 14] = z+1;
+            // hallo[(z * 512 + x) * 12 + 15] = 1;
+            hallo[(z * 512 + x) * 24 + 16] = x;
+            hallo[(z * 512 + x) * 24 + 17] = (float) heightmap[((z+1) * 512 + x)*4];
+            hallo[(z * 512 + x) * 24 + 18] = z+1;
+            // hallo[(z * 512 + x) * 12 + 19] = 1;
+            hallo[(z * 512 + x) * 24 + 20] = x;
+            hallo[(z * 512 + x) * 24 + 21] = (float) heightmap[(z * 512 + x)*4];
+            hallo[(z * 512 + x) * 24 + 22] = z;
+            // hallo[(z * 512 + x) * 12 + 23] = 1;
         }
 
     glGenBuffers(1, &heightmapVertexID);
@@ -37,96 +59,58 @@ Self::Self(inputstate& i) : in(i) {
         &hallo[0],
         GL_STATIC_DRAW
     );
-    cameraInit(glm::vec3(256, 100, 256));
+    cameraInit();
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }
  
-void Self::cameraInit(glm::vec3 look_pos) {
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 1000.0f);
-
-    cam_update();
-
+void Self::cameraInit() {
     // Model matrix : an identity matrix (model will be at the origin)
     glm::mat4 Model = glm::mat4(1.0f);
-
     glUniformMatrix4fv(
-        glGetUniformLocation(programID, "model"), 
+        glGetUniformLocation(program_id, "model"), 
         1,
         GL_FALSE,
         &Model[0][0]
     );
 
+    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 1000.0f);
     glUniformMatrix4fv(
-        glGetUniformLocation(programID, "projection"),
+        glGetUniformLocation(program_id, "projection"),
         1,
         GL_FALSE,
         &Projection[0][0]
     );
 }
 
-
-void Self::cam_update() {
-    if(cam_theta < 0.001f) 
-        cam_theta = 0.001f;
-    else if(cam_theta > M_PI - 0.001f) 
-        cam_theta = M_PI - 0.001f;
-
-    glm::mat4 View = glm::lookAt(
-        cam_pos,  // Camera is at (256,300,256), in World Space
-        cam_pos + glm::vec3(cos(cam_phi)*sin(cam_theta), cos(cam_theta), sin(cam_phi)*sin(cam_theta) ),
-        {0,1,0}  // Head is up (set to 0,-1,0 to look upside-down)
-        );
-        glUniformMatrix4fv(
-            glGetUniformLocation(programID, "view"),
-            1,
-            GL_FALSE,
-            &View[0][0]
-        );
-}
-
 void Self::update(int width, int height, double deltatime) {
     screen_width = width;
     screen_height = height;
 
-    if (in.down[SDLK_j]) {
-        cam_phi -= M_PI * deltatime / 2;
-        cam_update();
-    }
-    if (in.down[SDLK_l])  {
-        cam_phi += M_PI * deltatime / 2;
-        cam_update();
-    }
-    if (in.down[SDLK_i]) {
-        cam_theta += M_PI * deltatime / 2;
-        cam_update();
-    }
-    if (in.down[SDLK_k]) {
-        cam_theta -= M_PI * deltatime / 2;
-        cam_update();
-    }
-    if (in.down[SDLK_t]){
-        cam_pos.x -= cam_speed * sin(cam_phi) * deltatime;
-        cam_pos.y += cam_speed * cos(cam_phi) * deltatime;
-        cam_update();
-    }
+    if (in.down[SDLK_j])
+       cam.rotate(Camera::rotdir::LEFT, M_PI/2 * deltatime);
+
+    if (in.down[SDLK_l])
+        cam.rotate(Camera::rotdir::RIGHT, M_PI/2 * deltatime);
+
+    if (in.down[SDLK_i])
+        cam.rotate(Camera::rotdir::UP, M_PI/2 * deltatime);
+
+    if (in.down[SDLK_k])
+        cam.rotate(Camera::rotdir::DOWN, M_PI/2 * deltatime);
+
+    if (in.down[SDLK_t])
+        cam.move(Camera::movedir::FORWARD, cam_speed*deltatime);
+    
     if (in.down[SDLK_g]){
-        cam_pos.x += cam_speed * sin(cam_phi) * deltatime;
-        cam_pos.y -= cam_speed * cos(cam_phi) * deltatime;
-        cam_update();
+        cam.move(Camera::movedir::BACKWARD, cam_speed*deltatime);
     }
     if (in.down[SDLK_f]){
-            cam_pos.x += cam_speed * cos(cam_phi) * sin(cam_theta) * deltatime;
-        cam_pos.y += cam_speed * sin(cam_phi) * sin(cam_theta) * deltatime;
-        cam_pos.z += cam_speed * cos(cam_theta) * deltatime;
-        cam_update();
+        cam.move(Camera::movedir::LEFT, cam_speed*deltatime);
     }
     if (in.down[SDLK_h]){
-        cam_pos.x -= cam_speed * cos(cam_phi) * sin(cam_theta) * deltatime;
-        cam_pos.y -= cam_speed * sin(cam_phi) * sin(cam_theta) * deltatime;
-        cam_pos.z -= cam_speed * cos(cam_theta) * deltatime;
-        cam_update();
+        cam.move(Camera::movedir::RIGHT, cam_speed*deltatime);
     }
 }
 
@@ -139,7 +123,7 @@ void Self::render() {
     // glEnableVertexAttribArray(1);
     // glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glDrawArrays(GL_POINTS, 0, 512*512);
+    glDrawArrays(GL_TRIANGLES, 0, 512*512*6);
 
     // glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);

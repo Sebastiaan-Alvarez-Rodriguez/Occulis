@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Camera.h"
 #include "inputstate.h"
 class Self {
 public:
@@ -19,13 +20,11 @@ public:
     void render();
 
 private:
+    constexpr static float cam_speed = 50.0f;
     inputstate& in;
-    GLuint programID, heightmapVertexID, squareColorID;
+    Camera cam;
+    GLuint program_id, heightmapVertexID, squareColorID;
     size_t screen_width = 800, screen_height = 600;
-    glm::vec3 cam_pos = {200, 200, 200};
-    float cam_theta = M_PI /4*3, cam_phi = 0;
-    float cam_speed = 10.0f;
-    void cameraInit(glm::vec3 look_pos);
-    void cam_update();
+    void cameraInit();
 };
 #endif

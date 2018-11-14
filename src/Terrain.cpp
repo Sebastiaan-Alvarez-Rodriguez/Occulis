@@ -40,7 +40,7 @@ const static inline glm::vec3 getSurfaceNormal(const glm::vec3& a, const glm::ve
 }
 
 void Terrain::loadHeights() {
-    std::vector<glm::vec4> vertices = loadPNG("terrain_heightmap.png");
+    std::vector<glm::vec4> vertices = loadPNG("terrain/terrain_heightmap.png");
     heightmapVertexID = 0;
     glGenBuffers(1, &heightmapVertexID);
     glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
@@ -53,7 +53,7 @@ void Terrain::loadHeights() {
 }
 
 void Terrain::loadNormals() {
-    std::vector<glm::vec4> vertices = loadPNG("terrain_heightmap.png");
+    std::vector<glm::vec4> vertices = loadPNG("terrain/terrain_heightmap.png");
     std::vector<glm::vec4> normals(512*512*6);
     for (size_t i = 0; i < vertices.size(); i+=3) {
         glm::vec4 a = {vertices[i+0].x, vertices[i+0].y, vertices[i+0].z, 1};
@@ -74,7 +74,7 @@ void Terrain::loadNormals() {
 }
 
 void Terrain::loadColors() {
-    std::vector<glm::vec4> colors = loadPNG2("color_shaded.png");
+    std::vector<glm::vec4> colors = loadPNG2("terrain/color_flat.png");
     heightmapColorID = 0;
     glGenBuffers(1, &heightmapColorID);
     glBindBuffer(GL_ARRAY_BUFFER, heightmapColorID);

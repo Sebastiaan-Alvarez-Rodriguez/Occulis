@@ -1,5 +1,7 @@
 #include "Sun.h"
 
+#include <stdexcept>
+
 void Sun::init(GLuint program_id) {
     glUseProgram(program_id);
     createSphere(24, 48);
@@ -7,11 +9,14 @@ void Sun::init(GLuint program_id) {
 }
 
 void Sun::createSphere(size_t rings, size_t sectors) {
+    if (rings < 1 || sectors < 1)
+        throw std::runtime_error("Sphere created with invalid parameters");
     const float R = 1./(float)(rings-1);
     const float S = 1./(float)(sectors-1);
 
     std::vector<glm::vec4> vertices(rings * sectors * 6, {0,0,0,1});
     std::vector<glm::vec4> normals(rings * sectors * 6, {0,0,0,1});
+    std::vector<glm::vec4> colors(rings * sectors * 6, {253,184,19,255});
     for(size_t r = 0; r < rings; ++r) 
         for(size_t s = 0; s < sectors; ++s) {
             const float x_0=cos(2*M_PI*s*S)*sin(M_PI*r*R);
@@ -62,18 +67,33 @@ void Sun::createSphere(size_t rings, size_t sectors) {
         &normals[0],
         GL_STATIC_DRAW
     );
+    glGenBuffers(1, &sunColorID);
+    glBindBuffer(GL_ARRAY_BUFFER, sunColorID);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        colors.size()*4*sizeof(float),
+        &colors[0],
+        GL_STATIC_DRAW
+    );
 }
 
 void Sun::render() {
+    //enable vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, sunVertexID);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, sunNormalID);
+    //enable normals
     glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, sunNormalID);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    //enable colors
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, sunColorID);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 24*48*6);
 
+    glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 }

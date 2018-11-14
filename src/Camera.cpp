@@ -7,6 +7,11 @@ void Camera::init(GLuint program_id, const char* viewname) {
 }
 
 void Camera::cam_update() {
+    if(cam_phi < -M_PI) 
+        cam_phi = M_PI;
+    else if(cam_phi > M_PI) 
+        cam_phi = -M_PI;
+
     if(cam_theta < 0.001f) 
         cam_theta = 0.001f;
     else if(cam_theta > M_PI - 0.001f) 
@@ -34,10 +39,10 @@ void Camera::rotate(rotdir d, float amt) {
             cam_phi += amt;
             break;
         case rotdir::UP: 
-            cam_theta += amt; 
+            cam_theta -= amt; 
             break;
         case rotdir::DOWN: 
-            cam_theta -= amt; 
+            cam_theta += amt; 
             break;
     }
     cam_update();

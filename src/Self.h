@@ -20,7 +20,7 @@ public:
     void render();
 
 private:
-    constexpr static float cam_speed = 50.0f;
+    constexpr static float cam_speed = 100.0f;
     inputstate& in;
     Camera cam;
     Terrain ter;

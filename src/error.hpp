@@ -1,3 +1,6 @@
+#ifndef ERROR
+#define ERROR
+
 #include <iostream>
 
 static inline bool errCheck() {
@@ -6,3 +9,4 @@ static inline bool errCheck() {
         std::cerr<<'('<<err<<")- "<< gluErrorString(err);
     return err != 0;
 }
+#endif

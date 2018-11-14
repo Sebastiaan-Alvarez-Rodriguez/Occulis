@@ -12,7 +12,7 @@ struct rgba {
 };
 
 Self::Self(inputstate& i): in(i) {
-    program_id = LoadShaders("_shaderV.c", "_shaderF.c");
+    program_id = LoadShaders("shaders/_shaderV.c", "shaders/_shaderF.c");
     glUseProgram(program_id);
     cam.init(program_id, "view");
     ter.init(program_id);
@@ -75,7 +75,7 @@ void Self::update(int width, int height, double deltatime) {
 void Self::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     ter.render();
-    // sun.render();
+    sun.render();
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }

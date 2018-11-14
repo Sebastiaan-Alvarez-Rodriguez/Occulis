@@ -14,7 +14,7 @@ public:
     void createSphere(size_t rings, size_t sectors);
     void render();
 private:
-    GLuint sunVertexID, sunNormalID;
+    GLuint sunVertexID, sunNormalID, sunColorID;
     glm::vec3 position;
     float radius = 200.0f;
     

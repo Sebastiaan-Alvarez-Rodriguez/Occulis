@@ -1,11 +1,14 @@
+#ifndef SHADER
+#define SHADER
+
 #include <stdlib.h>
-#include <iostream>
 #define _USE_MATH_DEFINES
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <exception>
+#include <stdexcept>
 
 std::string readFile(const char* file_path) {
     std::string shaderCode;
@@ -16,7 +19,7 @@ std::string readFile(const char* file_path) {
         shaderCode = sstr.str();
         shaderStream.close();
     }else{
-        throw("Impossible to open "+std::string(file_path)+". Are you in the right directory?");
+        throw std::runtime_error("Impossible to open "+std::string(file_path)+". Are you in the right directory?");
     }
     return shaderCode;
 }
@@ -84,3 +87,4 @@ GLuint LoadShaders(const char* vertex_file_path, const char * fragment_file_path
     GLuint fragmentShaderID = createShader(fragment_file_path, GL_FRAGMENT_SHADER);
     return createProgram({vertexShaderID, fragmentShaderID});
 }
+#endif

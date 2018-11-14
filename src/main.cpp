@@ -34,6 +34,7 @@ const SDL_Surface* createWindow() {
         throw std::runtime_error("SDL init failed");
 
     //set depth buffer to 24 bits for better precision
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
     SDL_WM_SetCaption("Self2", NULL);

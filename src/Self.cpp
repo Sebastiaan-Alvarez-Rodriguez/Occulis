@@ -2,6 +2,7 @@
 #include "Self.h"
 #include <cmath>
 #include "Camera.h"
+#include "Terrain.h"
 #include "inputstate.h"
 #include "shader.hpp"
 #include "error.hpp"
@@ -72,17 +73,7 @@ void Self::update(int width, int height, double deltatime) {
 
 void Self::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
-    // glBindBuffer(GL_ARRAY_BUFFER, squareColorID);
-    // glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glDrawArrays(GL_TRIANGLES, 0, 512*512*6);
-
-    // glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
+    ter.render();
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }

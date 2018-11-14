@@ -10,7 +10,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
+#include "Terrain.h"
 #include "inputstate.h"
+
 class Self {
 public:
     Self(inputstate& i);
@@ -23,6 +25,7 @@ private:
     constexpr static float cam_speed = 50.0f;
     inputstate& in;
     Camera cam;
+    Terrain ter;
     GLuint program_id, heightmapVertexID, squareColorID;
     size_t screen_width = 800, screen_height = 600;
     void cameraInit();

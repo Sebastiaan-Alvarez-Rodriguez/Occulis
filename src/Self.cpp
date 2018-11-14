@@ -4,7 +4,6 @@
 #include "Camera.h"
 #include "inputstate.h"
 #include "shader.hpp"
-#include "picopng.hpp"
 #include "error.hpp"
 
 struct rgba {
@@ -15,50 +14,7 @@ Self::Self(inputstate& i): in(i) {
     program_id = LoadShaders("_shaderV.c", "_shaderF.c");
     glUseProgram(program_id);
     cam.init(program_id, "view");
-    
-    size_t w, h;
-    std::vector<unsigned char> buffer, heightmap;
-    loadFile(buffer, "terrain_heightmap.png");
-    if (decodePNG(heightmap, w, h, &buffer[0], buffer.size(), true)!=0)
-        throw std::runtime_error("picopng exception");
-    std::vector<float> hallo(512*512*4*6, 1);
-
-    for (size_t z = 0; z < 512; ++z)
-        for (size_t x = 0; x < 512; ++x) {
-            hallo[(z * 512 + x) * 24 + 0] = x;
-            hallo[(z * 512 + x) * 24 + 1] = (float) heightmap[(z * 512 + x)*4];
-            hallo[(z * 512 + x) * 24 + 2] = z;
-            // hallo[(z * 512 + x) * 12 + 3] = 1;
-            hallo[(z * 512 + x) * 24 + 4] = x+1;
-            hallo[(z * 512 + x) * 24 + 5] = (float) heightmap[(z * 512 + (x+1))*4];
-            hallo[(z * 512 + x) * 24 + 6] = z;
-            // hallo[(z * 512 + x) * 12 + 7] = 1;
-            hallo[(z * 512 + x) * 24 + 8] = x+1;
-            hallo[(z * 512 + x) * 24 + 9] = (float) heightmap[((z+1) * 512 + (x+1))*4];
-            hallo[(z * 512 + x) * 24 + 10] = z+1;
-            // hallo[(z * 512 + x) * 12 + 11] = 1;
-            hallo[(z * 512 + x) * 24 + 12] = x+1;
-            hallo[(z * 512 + x) * 24+ 13] = (float) heightmap[((z+1) * 512 + (x+1))*4];
-            hallo[(z * 512 + x) * 24 + 14] = z+1;
-            // hallo[(z * 512 + x) * 12 + 15] = 1;
-            hallo[(z * 512 + x) * 24 + 16] = x;
-            hallo[(z * 512 + x) * 24 + 17] = (float) heightmap[((z+1) * 512 + x)*4];
-            hallo[(z * 512 + x) * 24 + 18] = z+1;
-            // hallo[(z * 512 + x) * 12 + 19] = 1;
-            hallo[(z * 512 + x) * 24 + 20] = x;
-            hallo[(z * 512 + x) * 24 + 21] = (float) heightmap[(z * 512 + x)*4];
-            hallo[(z * 512 + x) * 24 + 22] = z;
-            // hallo[(z * 512 + x) * 12 + 23] = 1;
-        }
-
-    glGenBuffers(1, &heightmapVertexID);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        hallo.size()*sizeof(float),
-        &hallo[0],
-        GL_STATIC_DRAW
-    );
+    ter.init(program_id, "terrain_heightmap.png");
     cameraInit();
     if (errCheck())
         throw std::runtime_error("gl_exception");

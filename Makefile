@@ -9,7 +9,7 @@ OTHERS    = `sdl-config --cflags`
 
 
 SRCDIR    = src
-SRCFILES  = main.cpp Self.cpp Camera.cpp Terrain.cpp
+SRCFILES  = $(notdir $(shell find $(SRCDIR)/*.cpp)) #main.cpp Self.cpp Camera.cpp Terrain.cpp Sun.cpp
 SRCS      = $(addprefix $(SRCDIR),$(SRCFILES))
 
 OBJDIR    = obj/

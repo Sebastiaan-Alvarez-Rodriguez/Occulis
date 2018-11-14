@@ -1,8 +1,5 @@
 #ifndef SELF
 #define SELF
-// https://github.com/hmazhar/moderngl_camera/blob/master/camera.cpp
-// https://learnopengl.com/Getting-started/Camera
-// http://in2gpu.com/2016/03/14/opengl-fps-camera-quaternion/
 
 #include <GL/glew.h>
 #include <GL/glu.h>
@@ -11,6 +8,7 @@
 
 #include "Camera.h"
 #include "Terrain.h"
+#include "Sun.h"
 #include "inputstate.h"
 
 class Self {
@@ -26,6 +24,7 @@ private:
     inputstate& in;
     Camera cam;
     Terrain ter;
+    Sun sun;
     GLuint program_id, heightmapVertexID, squareColorID;
     size_t screen_width = 800, screen_height = 600;
     void cameraInit();

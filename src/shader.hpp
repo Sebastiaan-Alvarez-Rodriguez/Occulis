@@ -5,11 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <math.h>
-#include <time.h>
 #include <exception>
-#include <GL/glew.h>
-#include <glm/glm.hpp>
 
 std::string readFile(const char* file_path) {
     std::string shaderCode;

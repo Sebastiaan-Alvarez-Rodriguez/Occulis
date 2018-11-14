@@ -15,7 +15,8 @@ Self::Self(inputstate& i): in(i) {
     program_id = LoadShaders("_shaderV.c", "_shaderF.c");
     glUseProgram(program_id);
     cam.init(program_id, "view");
-    ter.init(program_id, "terrain_heightmap.png");
+    ter.init(program_id);
+    sun.init(program_id);
     cameraInit();
     if (errCheck())
         throw std::runtime_error("gl_exception");
@@ -32,7 +33,7 @@ void Self::cameraInit() {
     );
 
     // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 1000.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 10000.0f);
     glUniformMatrix4fv(
         glGetUniformLocation(program_id, "projection"),
         1,
@@ -74,6 +75,7 @@ void Self::update(int width, int height, double deltatime) {
 void Self::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     ter.render();
+    // sun.render();
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }

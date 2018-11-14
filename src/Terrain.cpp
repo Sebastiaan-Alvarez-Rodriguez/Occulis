@@ -74,7 +74,7 @@ void Terrain::loadNormals() {
 }
 
 void Terrain::loadColors() {
-    std::vector<glm::vec4> colors = loadPNG("color_flat.png");
+    std::vector<glm::vec4> colors = loadPNG2("color_shaded.png");
     heightmapColorID = 0;
     glGenBuffers(1, &heightmapColorID);
     glBindBuffer(GL_ARRAY_BUFFER, heightmapColorID);
@@ -109,4 +109,49 @@ std::vector<glm::vec4> Terrain::loadPNG(const char* png_filename) {
             vertices[(z*512+x)*6+5] = vertices[(z*512+x)*6+0];
         }
     return vertices;
+}
+
+std::vector<glm::vec4> Terrain::loadPNG2(const char* png_filename) {
+    size_t w, h;
+    std::vector<unsigned char> buffer, colormap;
+    loadFile(buffer, png_filename);
+    if (decodePNG(colormap, w, h, &buffer[0], buffer.size(), true)!=0)
+        throw std::runtime_error("picopng exception");
+    std::vector<glm::vec4> colors(512*512*6, {0,0,0,1});
+
+    for (size_t z = 0; z < 512; ++z)
+        for (size_t x = 0; x < 512; ++x) {
+            const float r_0 = colormap[(z*512+x)*4];
+            const float g_0 = colormap[(z*512+x)*4+1];
+            const float b_0 = colormap[(z*512+x)*4+2];
+            const float a_0 = colormap[(z*512+x)*4+3];
+
+            const float r_1 = colormap[(z*512+(x+1))*4];
+            const float g_1 = colormap[(z*512+(x+1))*4+1];
+            const float b_1 = colormap[(z*512+(x+1))*4+2];
+            const float a_1 = colormap[(z*512+(x+1))*4+3];
+
+            const float r_2 = colormap[((z+1)*512+(x+1))*4];
+            const float g_2 = colormap[((z+1)*512+(x+1))*4+1];
+            const float b_2 = colormap[((z+1)*512+(x+1))*4+2];
+            const float a_2 = colormap[((z+1)*512+(x+1))*4+3];
+
+            const float r_3 = colormap[((z+1)*512+x)*4];
+            const float g_3 = colormap[((z+1)*512+x)*4+1];
+            const float b_3 = colormap[((z+1)*512+x)*4+2];
+            const float a_3 = colormap[((z+1)*512+x)*4+3];
+
+            colors[(z*512+x)*6+0] = {r_0, g_0, b_0, a_0};
+
+            colors[(z*512+x)*6+1] = {r_1, g_1, b_1, a_1};
+
+            colors[(z*512+x)*6+2] = {r_2, g_2, b_2, a_2};
+
+            colors[(z*512+x)*6+3] = colors[(z*512+x)*6+2];
+
+            colors[(z*512+x)*6+4] = {r_3, g_3, b_3, a_3};
+
+            colors[(z*512+x)*6+5] = colors[(z*512+x)*6+0];
+        }
+    return colors;
 }

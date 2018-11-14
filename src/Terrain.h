@@ -19,5 +19,6 @@ private:
     void loadNormals();
     void loadColors();
     std::vector<glm::vec4> loadPNG(const char* png_filename);
+    std::vector<glm::vec4> loadPNG2(const char* png_filename);
 };
 #endif

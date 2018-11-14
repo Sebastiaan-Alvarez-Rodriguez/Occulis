@@ -12,5 +12,5 @@ void main(){
     // }else {
     //     out_color = normal.z * vec4(position.y/256.0f, 0.5 + 0.5 * position.y/256.0f, position.y/256.0f, 1.0f);
     // }
-    out_color = vec4(color.x/64.0f, color.y/64.0f, color.z/64.0f, 1);
+    out_color = vec4(color.x/255.0f, color.y/255.0f, color.z/255.0f, color.w/255.0f);
 }

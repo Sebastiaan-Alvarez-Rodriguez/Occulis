@@ -63,14 +63,14 @@ void Camera::move(movedir d, float amt) {
         case movedir::DOWN: 
             break;
         case movedir::FORWARD: 
-            cam_pos.x += cos(cam_phi) * amt;
+            cam_pos.x += cos(cam_phi) * sin(cam_theta) * amt;
             cam_pos.y += cos(cam_theta) * amt;
-            cam_pos.z += sin(cam_phi) * amt;
+            cam_pos.z += sin(cam_phi) * sin(cam_theta) * amt;
             break;
         case movedir::BACKWARD: 
-            cam_pos.x -= cos(cam_phi) * amt;
+            cam_pos.x -= cos(cam_phi) * sin(cam_theta) * amt;
             cam_pos.y -= cos(cam_theta) * amt;
-            cam_pos.z -= sin(cam_phi) * amt;
+            cam_pos.z -= sin(cam_phi) * sin(cam_theta) * amt;
             break;
     }
     cam_update();

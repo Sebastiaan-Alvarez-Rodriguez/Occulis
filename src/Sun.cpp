@@ -4,7 +4,7 @@
 
 void Sun::init(GLuint program_id) {
     glUseProgram(program_id);
-    createSphere(24, 48);
+    createSphere(48, 48);
     position = {512, 1000, 512};
 }
 
@@ -91,7 +91,7 @@ void Sun::render() {
     glBindBuffer(GL_ARRAY_BUFFER, sunColorID);
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 24*48*6);
+    glDrawArrays(GL_TRIANGLES, 0, 48*48*6);
 
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);

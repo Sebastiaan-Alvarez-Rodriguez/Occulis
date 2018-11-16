@@ -37,14 +37,14 @@ void compile(const char* file_path, GLuint shaderID) {
     glCompileShader(shaderID);
 
     // Check shader
-    GLint Result = GL_FALSE;
     int InfoLogLength;
-    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &Result);
     glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::string shaderErrorMessage;
-        glGetShaderInfoLog(shaderID, InfoLogLength, NULL, &shaderErrorMessage[0]);
-        throw std::runtime_error("Vertexshader compile errors:\n"+shaderErrorMessage);
+    if(InfoLogLength > 0) {
+        GLchar* shaderErrorMessage = (GLchar*) malloc(InfoLogLength);
+        glGetShaderInfoLog(shaderID, InfoLogLength, NULL, shaderErrorMessage);
+        std::cerr << shaderErrorMessage << std::endl;
+        free(shaderErrorMessage);
+        throw std::runtime_error("Shader compile error(s) detected");
     }
 }
 
@@ -65,20 +65,21 @@ GLuint createProgram(std::vector<GLuint> ids) {
 
     // Check the program
     printf("Checking program\n");
-    GLint Result = GL_FALSE;
-    int InfoLogLength;
-    glGetProgramiv(program_id, GL_LINK_STATUS, &Result);
-    glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0) {
-        std::string ProgramErrorMessage;
-        glGetProgramInfoLog(program_id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-        throw std::runtime_error("Linking errors:\n"+ProgramErrorMessage);
-    }
-    for (GLuint id : ids)
-        glDetachShader(program_id, id);
-    for (GLuint id : ids)
-    glDeleteShader(id);
 
+    int InfoLogLength;
+    glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if(InfoLogLength > 0) {
+        GLchar* shaderErrorMessage = (GLchar*) malloc(InfoLogLength);
+        glGetProgramInfoLog(program_id, InfoLogLength, NULL, shaderErrorMessage);
+        std::cerr << shaderErrorMessage << std::endl;
+        free(shaderErrorMessage);
+        throw std::runtime_error("Shader linking error(s) detected");
+    }
+    for(GLuint id : ids)
+        glDetachShader(program_id, id);
+    for(GLuint id : ids)
+        glDeleteShader(id);
+    printf("Shaders Complete... Starting program\n");
     return program_id;
 }
 

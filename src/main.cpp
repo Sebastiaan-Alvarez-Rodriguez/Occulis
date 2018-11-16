@@ -46,6 +46,7 @@ const SDL_Surface* createWindow() {
         throw std::runtime_error("SDL videomode init failed");
     if (glewInit() != GLEW_OK)
         throw std::runtime_error("GLEW init failed");
+    glEnable(GL_DEPTH_TEST);
     return screensurf;
 }
 

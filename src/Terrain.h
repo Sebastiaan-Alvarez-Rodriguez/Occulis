@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include "Image.h"
+#include "ImageReader.h"
 
 class Terrain {
 public:
@@ -15,10 +17,5 @@ public:
     void render();
 private:
     GLuint heightmapVertexID, heightmapNormalID, heightmapColorID;
-    void loadHeights();
-    void loadNormals();
-    void loadColors();
-    std::vector<glm::vec4> loadPNG(const char* png_filename);
-    std::vector<glm::vec4> loadPNG2(const char* png_filename);
 };
 #endif

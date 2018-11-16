@@ -1,157 +1,41 @@
 #include "Terrain.h"
-#include "picopng.hpp"
+#include "error.hpp"
 
 void Terrain::init(GLuint program_id) {
     glUseProgram(program_id);
-    loadHeights();
-    loadNormals();
-    loadColors();
+    std::vector<ImageReader::Data> data = ImageReader::read(
+        Image("terrain/terrain_heightmap.png"),
+        Image("terrain/color_flat.png")
+    );
+    //returns 1572864 (512*512*6) elements
+
+    glGenBuffers(1, &heightmapVertexID);
+    glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        data.size()*sizeof(ImageReader::Data),
+        &data[0],
+        GL_STATIC_DRAW
+    );
+    errCheck();
 }
 
 void Terrain::render() {
+    errCheck();
+    glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
     //enable vertices
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(ImageReader::Data), 0);
     //enable normals
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapNormalID);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ImageReader::Data), (void*)(sizeof(glm::vec4)));
     //enable colors
     glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapColorID);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(ImageReader::Data), (void*)(2* sizeof(glm::vec4)));
+    errCheck();
     glDrawArrays(GL_TRIANGLES, 0, 512*512*6);
 
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
-}
-
-
-const static inline glm::vec3 getSurfaceNormal(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c){
-  
- glm::vec3 polyVector1 = {b.x - a.x, b.y - a.y, b.z - a.z};
- glm::vec3 polyVector2 = {c.x - a.x, c.y - a.y, c.z - a.z};
-  
- glm::vec3 cross = glm::cross(polyVector1, polyVector2);
- return glm::normalize(cross);
-}
-
-void Terrain::loadHeights() {
-    std::vector<glm::vec4> vertices = loadPNG("terrain/terrain_heightmap.png");
-    heightmapVertexID = 0;
-    glGenBuffers(1, &heightmapVertexID);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapVertexID);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        vertices.size()*4*sizeof(float),
-        &vertices[0],
-        GL_STATIC_DRAW
-    );
-}
-
-void Terrain::loadNormals() {
-    std::vector<glm::vec4> vertices = loadPNG("terrain/terrain_heightmap.png");
-    std::vector<glm::vec4> normals(512*512*6);
-    for (size_t i = 0; i < vertices.size(); i+=3) {
-        glm::vec4 a = {vertices[i+0].x, vertices[i+0].y, vertices[i+0].z, 1};
-        glm::vec4 b = {vertices[i+1].x, vertices[i+1].y, vertices[i+1].z, 1};
-        glm::vec4 c = {vertices[i+2].x, vertices[i+2].y, vertices[i+2].z, 1};
-        glm::vec3 n = getSurfaceNormal(a, b, c);
-        normals[i+0] = normals[i+1] = normals[i+2] = {n.x, n.y, n.z, 1};
-    }
-    heightmapNormalID = 0;
-    glGenBuffers(1, &heightmapNormalID);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapNormalID);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        normals.size()*4*sizeof(float),
-        &normals[0],
-        GL_STATIC_DRAW
-    );
-}
-
-void Terrain::loadColors() {
-    std::vector<glm::vec4> colors = loadPNG2("terrain/color_flat.png");
-    heightmapColorID = 0;
-    glGenBuffers(1, &heightmapColorID);
-    glBindBuffer(GL_ARRAY_BUFFER, heightmapColorID);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        colors.size()*4*sizeof(float),
-        &colors[0],
-        GL_STATIC_DRAW
-    );
-}
-
-std::vector<glm::vec4> Terrain::loadPNG(const char* png_filename) {
-    size_t w, h;
-    std::vector<unsigned char> buffer, heightmap;
-    loadFile(buffer, png_filename);
-    if (decodePNG(heightmap, w, h, &buffer[0], buffer.size(), true)!=0)
-        throw std::runtime_error("picopng exception");
-    std::vector<glm::vec4> vertices(512*512*6, {0,0,0,1});
-
-    for (size_t z = 0; z < 512; ++z)
-        for (size_t x = 0; x < 512; ++x) {//hier de +1, +2 weghalen weer waar nodig
-            vertices[(z*512+x)*6+0] = {x,(float)heightmap[(z*512+x)*4],z,1};
-
-            vertices[(z*512+x)*6+1] = {x+1,(float)heightmap[(z*512+(x+1))*4+1],z,1};
-
-            vertices[(z*512+x)*6+2] = {x+1,(float)heightmap[((z+1)*512+(x+1))*4+2],z+1,1};
-
-            vertices[(z*512+x)*6+3] = vertices[(z * 512 + x) * 6 + 2];
-
-            vertices[(z*512+x)*6+4] = {x,(float)heightmap[((z+1)*512+x)*4+1],z+1,1};
-
-            vertices[(z*512+x)*6+5] = vertices[(z*512+x)*6+0];
-        }
-    return vertices;
-}
-
-std::vector<glm::vec4> Terrain::loadPNG2(const char* png_filename) {
-    size_t w, h;
-    std::vector<unsigned char> buffer, colormap;
-    loadFile(buffer, png_filename);
-    if (decodePNG(colormap, w, h, &buffer[0], buffer.size(), true)!=0)
-        throw std::runtime_error("picopng exception");
-    std::vector<glm::vec4> colors(512*512*6, {0,0,0,1});
-
-    for (size_t z = 0; z < 512; ++z)
-        for (size_t x = 0; x < 512; ++x) {
-            const float r_0 = colormap[(z*512+x)*4];
-            const float g_0 = colormap[(z*512+x)*4+1];
-            const float b_0 = colormap[(z*512+x)*4+2];
-            const float a_0 = colormap[(z*512+x)*4+3];
-
-            const float r_1 = colormap[(z*512+(x+1))*4];
-            const float g_1 = colormap[(z*512+(x+1))*4+1];
-            const float b_1 = colormap[(z*512+(x+1))*4+2];
-            const float a_1 = colormap[(z*512+(x+1))*4+3];
-
-            const float r_2 = colormap[((z+1)*512+(x+1))*4];
-            const float g_2 = colormap[((z+1)*512+(x+1))*4+1];
-            const float b_2 = colormap[((z+1)*512+(x+1))*4+2];
-            const float a_2 = colormap[((z+1)*512+(x+1))*4+3];
-
-            const float r_3 = colormap[((z+1)*512+x)*4];
-            const float g_3 = colormap[((z+1)*512+x)*4+1];
-            const float b_3 = colormap[((z+1)*512+x)*4+2];
-            const float a_3 = colormap[((z+1)*512+x)*4+3];
-
-            colors[(z*512+x)*6+0] = {r_0, g_0, b_0, a_0};
-
-            colors[(z*512+x)*6+1] = {r_1, g_1, b_1, a_1};
-
-            colors[(z*512+x)*6+2] = {r_2, g_2, b_2, a_2};
-
-            colors[(z*512+x)*6+3] = colors[(z*512+x)*6+2];
-
-            colors[(z*512+x)*6+4] = {r_3, g_3, b_3, a_3};
-
-            colors[(z*512+x)*6+5] = colors[(z*512+x)*6+0];
-        }
-    return colors;
 }

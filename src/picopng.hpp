@@ -1,3 +1,6 @@
+#ifndef PICOPNG
+#define PICOPNG
+
 #include <vector>
 
 /*
@@ -560,3 +563,4 @@ void loadFile(std::vector<unsigned char>& buffer, const std::string& filename) /
   else buffer.clear();
 }
 
+#endif

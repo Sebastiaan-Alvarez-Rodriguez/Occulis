@@ -5,14 +5,14 @@
 #include "util.h"
 #include "error.hpp"
 
-void Sun::init(GLuint program_id, const Camera* cam) {
+void Sun::init(GLuint program_id) {
     this->program_id = program_id;
-    this->cam = cam;
 
     glUseProgram(program_id);
-    createSun(rings, sectors);
-    position = {0, 3000, 0};
-    recalculateModel();
+    //createSun(rings, sectors);
+    position = {0, -200, 0};
+    // recalculateModel();
+    // setModel();
     errCheck();
 }
 
@@ -37,20 +37,16 @@ void Sun::render(GLenum drawMode) {
 }
 
 void Sun::update(double deltatime) {
-    angle += deltatime/10;
-    if (angle > 360)
+    angle += deltatime;
+    if (angle > 2*M_PI)
         angle = 0;
-
     position.x = std::sin(angle) * orbit_radius;
     position.y = std::cos(angle) * orbit_radius;
     recalculateModel();
 }
 
 glm::vec3 Sun::getDirection() const {
-    glm::vec3 curPos = position, nextPos = position;
-    nextPos.x = std::sin(angle+0.00000001) * orbit_radius;
-    nextPos.y = std::cos(angle+0.00000001) * orbit_radius;
-    return glm::normalize(glm::cross(position, {0,0,1}));
+    return glm::normalize(position);
 }
 
 glm::vec3 Sun::getPosition() const {
@@ -65,6 +61,7 @@ void Sun::setModel() {
         &model[0][0]
     );
 }
+
 void Sun::recalculateModel() {
     model = glm::translate(glm::mat4(1.0f), position);
 }

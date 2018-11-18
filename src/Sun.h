@@ -6,11 +6,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera.h"
-
 class Sun {
 public:
-    void init(GLuint program_id, const Camera* cam);
+    void init(GLuint program_id);
     void render(GLenum drawMode);
     void update(double deltatime);
     glm::vec3 getDirection() const;
@@ -25,11 +23,11 @@ private:
     float radius = 200.0f;
     const size_t rings = 48, sectors = 48;
 
-    float angle = 0;
+    float angle = M_PI/4 * 3;
     float orbit_radius = 3000.0f;
 
-    const Camera* cam;
     void setModel();
+    
     void recalculateModel();
     void createSun(size_t r, size_t s);
 };

@@ -10,39 +10,6 @@ void Camera::init(GLuint program_id_main, const char* viewname_main, GLuint prog
     errCheck();
 }
 
-void Camera::cam_update() {
-    if(cam_phi < -M_PI) 
-        cam_phi = M_PI;
-    else if(cam_phi > M_PI) 
-        cam_phi = -M_PI;
-
-    if(cam_theta < 0.001f) 
-        cam_theta = 0.001f;
-    else if(cam_theta > M_PI - 0.001f) 
-        cam_theta = M_PI - 0.001f;
-
-    glm::mat4 view = glm::lookAt(
-        cam_pos,  // Camera is at (256,300,256), in World Space
-        cam_pos + glm::vec3(std::cos(cam_phi)*std::sin(cam_theta), std::cos(cam_theta), std::sin(cam_phi)*std::sin(cam_theta)),
-        {0,1,0}  // Head is up (set to 0,-1,0 to look upside-down)
-    );
-    glUseProgram(program_id_main);
-    glUniformMatrix4fv(
-        glGetUniformLocation(program_id_main, viewname_main.c_str()), 
-        1,
-        GL_FALSE,
-        &view[0][0]
-    );
-    
-    glUseProgram(program_id_atmos);
-    glUniformMatrix4fv(
-        glGetUniformLocation(program_id_atmos, viewname_atmos.c_str()), 
-        1,
-        GL_FALSE,
-        &view[0][0]
-    );
-}
-
 void Camera::rotate(rotdir d, float amt) {
     switch (d) {
         case rotdir::LEFT: 
@@ -87,4 +54,40 @@ void Camera::move(movedir d, float amt) {
             break;
     }
     cam_update();
+}
+
+glm::mat4 Camera::getView() const{
+    return view;
+}
+
+void Camera::cam_update() {
+    if(cam_phi < -M_PI) 
+        cam_phi = M_PI;
+    else if(cam_phi > M_PI) 
+        cam_phi = -M_PI;
+
+    if(cam_theta < 0.0001f) 
+        cam_theta = 0.0001f;
+    else if(cam_theta > M_PI - 0.0001f) 
+        cam_theta = M_PI - 0.0001f;
+
+    view = glm::lookAt(
+        cam_pos,  // Camera is at (256,300,256), in World Space
+        cam_pos + glm::vec3(std::cos(cam_phi)*std::sin(cam_theta), std::cos(cam_theta), std::sin(cam_phi)*std::sin(cam_theta)),
+        {0,1,0}  // Head is up (set to 0,-1,0 to look upside-down)
+    );
+    glUseProgram(program_id_main);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_main, "view"), 
+        1,
+        GL_FALSE,
+        &view[0][0]
+    );
+    glUseProgram(program_id_atmos);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_atmos, "view"), 
+        1,
+        GL_FALSE,
+        &view[0][0]
+    );
 }

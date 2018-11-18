@@ -9,16 +9,10 @@
 #include "Sun.h"
 #include "preetham.h"
 /*Intel:
-7: (dome)
-    http://www.rastertek.com/dx11ter07.html
-    http://www.rastertek.com/tertut10.html
 
 8.5:
     keep a separate cloud layer, 
-    and separate sky-dome with a simple gradient by day, 
-    and starry sky by night, (with stars on their own layer.
-6:
-    https://www.gamedev.net/forums/topic/538429-day--night-cycle-sky-shader-for-you/
+    keep a separate stars layer.
 
 7.5: (sun)
     1) full sun : 255,255,220
@@ -28,9 +22,6 @@
     Don't forget to rotate both lights around your scene.
     Some sky gradients may be nice too, from blue to orange to black
     More realistic: search for Mie and Rayleigh scattering functions
-
-8:
-    Preetham sky model
 */
 
 //Potential additions:
@@ -39,7 +30,7 @@
 
 class SkyDome {
 public:
-    void init(GLuint program_id, const Sun* sun, const Camera* cam);
+    void init(GLuint program_id, const Sun* sun);
     void render(GLenum drawMode);
 private:
     GLuint program_id;
@@ -55,8 +46,6 @@ private:
 
     const Sun* sun;
     glm::vec3 sunDirection;
-
-    const Camera* cam;
 
     void setModel();
     void setSkyData();

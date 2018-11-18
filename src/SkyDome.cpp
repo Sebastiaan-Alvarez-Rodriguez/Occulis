@@ -3,10 +3,9 @@
 #include "util.h"
 #include "error.hpp"
 
-void SkyDome::init(GLuint program_id, const Sun* sun, const Camera* cam) {
+void SkyDome::init(GLuint program_id, const Sun* sun) {
     this->program_id = program_id;
     this->sun = sun;
-    this->cam = cam;
     glUseProgram(program_id);
 
     createSkyDome(rings, sectors);
@@ -18,6 +17,7 @@ void SkyDome::init(GLuint program_id, const Sun* sun, const Camera* cam) {
 
 void SkyDome::render(GLenum drawMode) {
     setModel();
+
     setSkyData();
     
     glDisable(GL_DEPTH_TEST);
@@ -66,7 +66,11 @@ void SkyDome::setSkyData() {
 void SkyDome::recalculateSkyData() {
     //params for below: glm::vec3 sun_direction, float turbidity, float normalizedSunY
     sunDirection = sun->getDirection();
-    skyData = computeSkyData(sunDirection, 2, (glm::normalize(sun->getPosition())).y);
+    auto tmp = glm::normalize(sun->getPosition());
+    // auto tmp = sunDirection.x;
+    // sunDirection.x = sunDirection.y;
+    // sunDirection.y =tmp;
+    skyData = computeSkyData(tmp, 2, tmp.y);
 }
 
 void SkyDome::recalculateModel() {

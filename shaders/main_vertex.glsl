@@ -1,3 +1,10 @@
+//New intel: Use shadowmapping for terrain like this
+// https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+// http://ogldev.atspace.co.uk/www/tutorial23/tutorial23.html
+// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
+
+//PCF for softer shadows (first link has info)
+
 #version 330 core
 layout(location = 0) in vec4 _vertex;
 layout(location = 1) in vec4 _normal;

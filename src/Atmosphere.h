@@ -10,9 +10,10 @@
 
 class Atmosphere {
 public:
-    void init(GLuint skydome_pID, GLuint sun_pID, const Camera* cam);
+    void init(GLuint skydome_pID, GLuint sun_pID);
     void render(GLenum drawMode);
     void update(double deltatime);
+    void printSunDir();
 private:
     GLuint skydome_pID, sun_pID;
     SkyDome dome;

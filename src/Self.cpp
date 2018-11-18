@@ -19,7 +19,7 @@ Self::Self(inputstate& i): in(i) {
 
     cam.init(program_id_main, "view", program_id_atmos, "view");
 
-    atmosphere.init(program_id_atmos, program_id_main, &cam);
+    atmosphere.init(program_id_atmos, program_id_main);
 
     ter.init(program_id_main);
     cameraInit();
@@ -77,8 +77,12 @@ void Self::update(int width, int height, double deltatime) {
     if (in.down[SDLK_h]){
         cam.move(Camera::movedir::RIGHT, cam_speed*deltatime);
     }
-    
-    atmosphere.update(deltatime);
+    if (in.down[SDLK_a])
+        atmosphere.update(deltatime);
+    if (in.down[SDLK_z])
+        atmosphere.update(-deltatime);
+    if (in.press[SDLK_x])
+        atmosphere.printSunDir();
 }
 
 void Self::render() {

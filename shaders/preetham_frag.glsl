@@ -4,8 +4,6 @@ in vec4 position;
 in vec4 normal;
 in vec4 color;
 
-// in vec3 direction;
-
 out vec4 _color;
 
 uniform vec3 A, B, C, D, E, Z;

@@ -1,9 +1,11 @@
-#define _USE_MATH_DEFINES
 #include "Self.h"
+
+#define _USE_MATH_DEFINES
 #include <cmath>
-#include "Camera.h"
-#include "Terrain.h"
-#include "inputstate.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "shader.hpp"
 #include "error.hpp"
 
@@ -12,30 +14,32 @@ struct rgba {
 };
 
 Self::Self(inputstate& i): in(i) {
-    program_id = LoadShaders("shaders/_shaderV.c", "shaders/_shaderF.c");
-    glUseProgram(program_id);
-    cam.init(program_id, "view");
-    ter.init(program_id);
-    sun.init(program_id);
+    program_id_main = LoadShaders("shaders/main_vertex.glsl", "shaders/main_frag.glsl");
+    program_id_atmos= LoadShaders("shaders/main_vertex.glsl", "shaders/preetham_frag.glsl");
+
+    cam.init(program_id_main, "view", program_id_atmos, "view");
+
+    atmosphere.init(program_id_atmos, program_id_main, &cam);
+
+    ter.init(program_id_main);
     cameraInit();
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }
  
 void Self::cameraInit() {
-    // Model matrix : an identity matrix (model will be at the origin)
-    glm::mat4 Model = glm::mat4(1.0f);
+    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+    glUseProgram(program_id_main);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 100000.0f);
     glUniformMatrix4fv(
-        glGetUniformLocation(program_id, "model"), 
+        glGetUniformLocation(program_id_main, "projection"),
         1,
         GL_FALSE,
-        &Model[0][0]
+        &Projection[0][0]
     );
-
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 10000.0f);
+    glUseProgram(program_id_atmos);
     glUniformMatrix4fv(
-        glGetUniformLocation(program_id, "projection"),
+        glGetUniformLocation(program_id_atmos, "projection"),
         1,
         GL_FALSE,
         &Projection[0][0]
@@ -45,6 +49,9 @@ void Self::cameraInit() {
 void Self::update(int width, int height, double deltatime) {
     screen_width = width;
     screen_height = height;
+
+    if (in.press[SDLK_w])
+        wireframe_toggle = !wireframe_toggle;
 
     if (in.down[SDLK_j])
        cam.rotate(Camera::rotdir::LEFT, M_PI/2 * deltatime);
@@ -70,12 +77,19 @@ void Self::update(int width, int height, double deltatime) {
     if (in.down[SDLK_h]){
         cam.move(Camera::movedir::RIGHT, cam_speed*deltatime);
     }
+    
+    atmosphere.update(deltatime);
 }
 
 void Self::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    ter.render();
-    sun.render();
+    glClearColor(0,0,1,0);
+    GLenum drawMode = wireframe_toggle ? GL_LINES : GL_TRIANGLES;
+
+    atmosphere.render(drawMode);
+
+    ter.render(drawMode);
+
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }

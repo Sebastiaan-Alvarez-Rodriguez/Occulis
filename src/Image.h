@@ -12,11 +12,11 @@ public:
     Image(const char* src);
     
     Pixel* data();
-    const Pixel& getPixel(size_t x, size_t y);
+    const Pixel& getPixel(size_t x, size_t y) const;
 
-    size_t width();
-    size_t height();
-    size_t size();
+    size_t width() const;
+    size_t height() const;
+    size_t size() const;
 private:
     size_t w, h;
     std::vector<Pixel> p;

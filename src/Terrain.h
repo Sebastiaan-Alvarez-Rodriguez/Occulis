@@ -14,8 +14,10 @@
 class Terrain {
 public:
     void init(GLuint program_id);
-    void render();
+    void setModel();
+    void render(GLenum drawMode);
 private:
-    GLuint heightmapVertexID, heightmapNormalID, heightmapColorID;
+    GLuint program_id;
+    GLuint heightmapVertexID;
 };
 #endif

@@ -12,7 +12,7 @@ Image::Image(const char* src) {
 }
 
 
-const Image::Pixel& Image::getPixel(size_t x, size_t y) {
+const Image::Pixel& Image::getPixel(size_t x, size_t y) const {
     return p[y*w+x];
 }
 
@@ -20,14 +20,14 @@ Image::Pixel* Image::data() {
     return p.data();
 }
 
-size_t Image::width() {
+size_t Image::width() const {
     return w;
 }
 
-size_t Image::height() {
+size_t Image::height() const {
     return h;
 }
 
-size_t Image::size() {
+size_t Image::size() const {
     return p.size();
 }

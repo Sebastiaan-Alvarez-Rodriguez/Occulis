@@ -1,5 +1,8 @@
 #include "ImageReader.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 const static inline glm::vec4 readVertexPixel(const Image::Pixel& p, size_t x, size_t z) {
     return {x, p.y, z, 1};
 }
@@ -17,9 +20,8 @@ const static inline glm::vec4 getSurfaceNormal(const glm::vec4& a, const glm::ve
  return {glm::normalize(cross),1};
 }
 
-//TODO: fill normals
-std::vector<ImageReader::Data> ImageReader::read(Image heightmap, Image colormap) {
-    std::vector<ImageReader::Data> ret;
+std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colormap) {
+    std::vector<Data> ret;
     size_t w = heightmap.width(), h = heightmap.height();
     ret.reserve((w-1)*(h-1)*6);
     for (size_t z = 0; z < h-1; ++z)

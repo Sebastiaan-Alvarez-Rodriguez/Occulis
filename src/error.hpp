@@ -4,9 +4,12 @@
 #include <iostream>
 
 static inline bool errCheck() {
-    auto err = glGetError(); 
-    if (err)
-        std::cerr<<'('<<err<<")- "<< gluErrorString(err);
-    return err != 0;
+    auto err = glGetError();
+    bool errorOccured = false;
+    while (err != 0) {
+        errorOccured = true;
+        std::cerr<<'('<<err<<")- "<< gluErrorString(err) << std::endl;
+    }
+    return errorOccured;
 }
 #endif

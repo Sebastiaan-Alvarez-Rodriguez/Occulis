@@ -3,12 +3,10 @@
 
 #include <GL/glew.h>
 #include <GL/glu.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
+#include "Atmosphere.h"
 #include "Terrain.h"
-#include "Sun.h"
 #include "inputstate.h"
 
 class Self {
@@ -23,10 +21,11 @@ private:
     constexpr static float cam_speed = 100.0f;
     inputstate& in;
     Camera cam;
+    Atmosphere atmosphere;
     Terrain ter;
-    Sun sun;
-    GLuint program_id, heightmapVertexID, squareColorID;
+    GLuint program_id_main, program_id_atmos;
     size_t screen_width = 800, screen_height = 600;
+    bool wireframe_toggle = false;
     void cameraInit();
 };
 #endif

@@ -1,9 +1,13 @@
 #include "Camera.h"
+#include "error.hpp"
 
-void Camera::init(GLuint program_id, const char* viewname) {
-    this->program_id = program_id;
-    this->viewname = std::string(viewname);
+void Camera::init(GLuint program_id_main, const char* viewname_main, GLuint program_id_atmos, const char* viewname_atmos) {
+    this->program_id_main = program_id_main;
+    this->program_id_atmos = program_id_atmos;
+    this->viewname_main = std::string(viewname_main);
+    this->viewname_atmos = std::string(viewname_atmos);
     cam_update();
+    errCheck();
 }
 
 void Camera::cam_update() {
@@ -19,11 +23,20 @@ void Camera::cam_update() {
 
     glm::mat4 view = glm::lookAt(
         cam_pos,  // Camera is at (256,300,256), in World Space
-        cam_pos + glm::vec3(cos(cam_phi)*sin(cam_theta), cos(cam_theta), sin(cam_phi)*sin(cam_theta) ),
+        cam_pos + glm::vec3(std::cos(cam_phi)*std::sin(cam_theta), std::cos(cam_theta), std::sin(cam_phi)*std::sin(cam_theta)),
         {0,1,0}  // Head is up (set to 0,-1,0 to look upside-down)
     );
+    glUseProgram(program_id_main);
     glUniformMatrix4fv(
-        glGetUniformLocation(program_id, viewname.c_str()), 
+        glGetUniformLocation(program_id_main, viewname_main.c_str()), 
+        1,
+        GL_FALSE,
+        &view[0][0]
+    );
+    
+    glUseProgram(program_id_atmos);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_atmos, viewname_atmos.c_str()), 
         1,
         GL_FALSE,
         &view[0][0]
@@ -51,26 +64,26 @@ void Camera::rotate(rotdir d, float amt) {
 void Camera::move(movedir d, float amt) {
     switch (d) {
         case movedir::LEFT: 
-            cam_pos.x += sin(cam_phi) * amt;
-            cam_pos.z -= cos(cam_phi) * amt;
+            cam_pos.x += std::sin(cam_phi) * amt;
+            cam_pos.z -= std::cos(cam_phi) * amt;
             break;
         case movedir::RIGHT: 
-            cam_pos.x -= sin(cam_phi) * amt;
-            cam_pos.z += cos(cam_phi) * amt;
+            cam_pos.x -= std::sin(cam_phi) * amt;
+            cam_pos.z += std::cos(cam_phi) * amt;
             break;
         case movedir::UP: 
             break;
         case movedir::DOWN: 
             break;
         case movedir::FORWARD: 
-            cam_pos.x += cos(cam_phi) * sin(cam_theta) * amt;
-            cam_pos.y += cos(cam_theta) * amt;
-            cam_pos.z += sin(cam_phi) * sin(cam_theta) * amt;
+            cam_pos.x += std::cos(cam_phi) * std::sin(cam_theta) * amt;
+            cam_pos.y += std::cos(cam_theta) * amt;
+            cam_pos.z += std::sin(cam_phi) * std::sin(cam_theta) * amt;
             break;
         case movedir::BACKWARD: 
-            cam_pos.x -= cos(cam_phi) * sin(cam_theta) * amt;
-            cam_pos.y -= cos(cam_theta) * amt;
-            cam_pos.z -= sin(cam_phi) * sin(cam_theta) * amt;
+            cam_pos.x -= std::cos(cam_phi) * std::sin(cam_theta) * amt;
+            cam_pos.y -= std::cos(cam_theta) * amt;
+            cam_pos.z -= std::sin(cam_phi) * std::sin(cam_theta) * amt;
             break;
     }
     cam_update();

@@ -1,11 +1,9 @@
 #include "Camera.h"
 #include "error.hpp"
 
-void Camera::init(GLuint program_id_main, const char* viewname_main, GLuint program_id_atmos, const char* viewname_atmos) {
+void Camera::init(GLuint program_id_main, GLuint program_id_atmos) {
     this->program_id_main = program_id_main;
     this->program_id_atmos = program_id_atmos;
-    this->viewname_main = std::string(viewname_main);
-    this->viewname_atmos = std::string(viewname_atmos);
     cam_update();
     errCheck();
 }

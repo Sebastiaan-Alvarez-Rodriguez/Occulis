@@ -11,6 +11,8 @@
 #include "Image.h"
 #include "ImageReader.h"
 
+//Ideas: Implement grass (with instanced drawArrays call!!!!
+    //  https://learnopengl.com/Advanced-OpenGL/Instancing
 class Terrain {
 public:
     void init(GLuint program_id);

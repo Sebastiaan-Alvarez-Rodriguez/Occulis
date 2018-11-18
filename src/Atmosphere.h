@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 #include <GL/glu.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
 #include "SkyDome.h"
@@ -14,6 +16,7 @@ public:
     void render(GLenum drawMode);
     void update(double deltatime);
     void printSunDir();
+    glm::vec3 getSunPosition() const;
 private:
     GLuint skydome_pID, sun_pID;
     SkyDome dome;

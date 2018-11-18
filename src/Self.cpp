@@ -16,13 +16,15 @@ struct rgba {
 Self::Self(inputstate& i): in(i) {
     program_id_main = LoadShaders("shaders/main_vertex.glsl", "shaders/main_frag.glsl");
     program_id_atmos= LoadShaders("shaders/main_vertex.glsl", "shaders/preetham_frag.glsl");
+    program_id_depth= LoadShaders("shaders/depth_vertex.glsl", "shaders/depth_frag.glsl");
 
-    cam.init(program_id_main, "view", program_id_atmos, "view");
+    cam.init(program_id_main, program_id_atmos);
 
     atmosphere.init(program_id_atmos, program_id_main);
 
     ter.init(program_id_main);
     cameraInit();
+    depthStuffInit();
     if (errCheck())
         throw std::runtime_error("gl_exception");
 }
@@ -44,6 +46,44 @@ void Self::cameraInit() {
         GL_FALSE,
         &Projection[0][0]
     );
+
+    glUseProgram(program_id_depth);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_depth, "cam_projection"),
+        1,
+        GL_FALSE,
+        &Projection[0][0]
+    );
+    glUseProgram(program_id_main);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_main, "cam_projection"),
+        1,
+        GL_FALSE,
+        &Projection[0][0]
+    );
+}
+
+void Self::depthStuffInit() {
+    frame_buffer_id = 0;
+    glGenFramebuffers(1, &frame_buffer_id);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
+
+    depth_texture_id = 0;
+    glGenTextures(1, &depth_texture_id);
+    glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_texture_id, 0);
+
+    glDrawBuffer(GL_NONE); //No color buffer is drawn to.
+
+    // Always check that our framebuffer is ok
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        throw std::runtime_error("Framebuffer is troubled");
 }
 
 void Self::update(int width, int height, double deltatime) {
@@ -68,15 +108,15 @@ void Self::update(int width, int height, double deltatime) {
     if (in.down[SDLK_t])
         cam.move(Camera::movedir::FORWARD, cam_speed*deltatime);
     
-    if (in.down[SDLK_g]){
+    if (in.down[SDLK_g])
         cam.move(Camera::movedir::BACKWARD, cam_speed*deltatime);
-    }
-    if (in.down[SDLK_f]){
+
+    if (in.down[SDLK_f])
         cam.move(Camera::movedir::LEFT, cam_speed*deltatime);
-    }
-    if (in.down[SDLK_h]){
+
+    if (in.down[SDLK_h])
         cam.move(Camera::movedir::RIGHT, cam_speed*deltatime);
-    }
+
     if (in.down[SDLK_a])
         atmosphere.update(deltatime);
     if (in.down[SDLK_z])
@@ -85,13 +125,60 @@ void Self::update(int width, int height, double deltatime) {
         atmosphere.printSunDir();
 }
 
+void Self::lightCamSetup() {
+    //guaranteed program_id_depth in use here
+    glm::vec3 sunLoc = atmosphere.getSunPosition();
+    glm::mat4 camView = glm::lookAt(
+        sunLoc,            //camera is at sun location
+        {256,0,256},       //and looks at mid-point of image
+        {0,1,0}           // Head is up
+    );
+    glm::mat4 camModel = glm::translate(glm::mat4(1.0f), sunLoc);
+    // glUseProgram(program_id_depth);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_depth, "cam_view"),
+        1,
+        GL_FALSE,
+        &camView[0][0]
+    );
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_depth, "cam_model"),
+        1,
+        GL_FALSE,
+        &camModel[0][0]
+    );
+    glUseProgram(program_id_main);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_main, "cam_view"),
+        1,
+        GL_FALSE,
+        &camView[0][0]
+    );
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_main, "cam_model"),
+        1,
+        GL_FALSE,
+        &camModel[0][0]
+    );
+}
+
 void Self::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0,0,1,0);
+    glClearColor(1,0,0,0);
+
+    //1e pass
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id); //bind depth buffer
+    glUseProgram(program_id_depth);
+    lightCamSetup();                                    //setup camera
+    ter.render(GL_TRIANGLES);                           //render terrain
+
+    //2e pass
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);               //bind default buffer
+    // glActiveTexture(depth_texture_id);                  //zet texture als actief
+
     GLenum drawMode = wireframe_toggle ? GL_LINES : GL_TRIANGLES;
 
     atmosphere.render(drawMode);
-
     ter.render(drawMode);
 
     if (errCheck())

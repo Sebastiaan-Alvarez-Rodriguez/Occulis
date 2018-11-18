@@ -27,3 +27,6 @@ void Atmosphere::printSunDir() {
     auto position = sun.getDirection();
     std::cerr << "Dir x: "<<position.x<< "   y:"<<position.y<<"   z:"<<position.z << std::endl;
 }
+glm::vec3 Atmosphere::getSunPosition() const {
+    return sun.getPosition();
+}

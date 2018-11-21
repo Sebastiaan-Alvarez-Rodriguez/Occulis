@@ -11,15 +11,18 @@
 #include "Image.h"
 #include "ImageReader.h"
 
+#include "Camera.h"
 //Ideas: Implement grass (with instanced drawArrays call!!!!
     //  https://learnopengl.com/Advanced-OpenGL/Instancing
 class Terrain {
 public:
-    void init(GLuint program_id);
-    void setModel();
-    void render(GLenum drawMode);
+    Terrain(const Camera* cam);
+    void render(GLenum drawMode, GLuint program_id);
 private:
-    GLuint program_id;
+    const Camera* cam;
     GLuint heightmapVertexID;
+
+    size_t triangles;
+    void setModelView(GLuint p);
 };
 #endif

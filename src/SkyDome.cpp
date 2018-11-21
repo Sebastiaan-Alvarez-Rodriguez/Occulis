@@ -3,23 +3,16 @@
 #include "util.h"
 #include "error.hpp"
 
-void SkyDome::init(GLuint program_id, const Sun* sun) {
-    this->program_id = program_id;
-    this->sun = sun;
-    glUseProgram(program_id);
-
+SkyDome::SkyDome(const Sun* sun, const Camera* cam): sun(sun), cam(cam) {
     createSkyDome(rings, sectors);
-    position = {256, 256, 256};
-    recalculateModel();
     recalculateSkyData();
     errCheck();
 }
 
-void SkyDome::render(GLenum drawMode) {
-    setModel();
+void SkyDome::render(GLenum drawMode, GLuint program_id) {
+    setModelView(program_id);
+    setSkyData(program_id);
 
-    setSkyData();
-    
     glDisable(GL_DEPTH_TEST);
     //enable vertices
     glBindBuffer(GL_ARRAY_BUFFER, domeVertexID);
@@ -38,29 +31,34 @@ void SkyDome::render(GLenum drawMode) {
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
     glEnable(GL_DEPTH_TEST);
-
+errCheck();
 }
 
-void SkyDome::setModel() {
+void SkyDome::setModelView(GLuint p) {
+    glm::mat4 model = glm::mat4(1.0f);
     glUniformMatrix4fv(
-        glGetUniformLocation(program_id, "model"), 
+        glGetUniformLocation(p, "model"), 
         1,
         GL_FALSE,
         &model[0][0]
     );
+    glm::mat4 view = cam->getView();
+    glUniformMatrix4fv(
+        glGetUniformLocation(p, "view"), 
+        1,
+        GL_FALSE,
+        &view[0][0]
+    );
 }
 
-void SkyDome::setSkyData() {
-    recalculateSkyData();
-
-    
-    glUniform3f(glGetUniformLocation(program_id, "A"), skyData.A.x, skyData.A.y, skyData.A.z);
-    glUniform3f(glGetUniformLocation(program_id, "B"), skyData.B.x, skyData.B.y, skyData.B.z);
-    glUniform3f(glGetUniformLocation(program_id, "C"), skyData.C.x, skyData.C.y, skyData.C.z);
-    glUniform3f(glGetUniformLocation(program_id, "D"), skyData.D.x, skyData.D.y, skyData.D.z);
-    glUniform3f(glGetUniformLocation(program_id, "E"), skyData.E.x, skyData.E.y, skyData.E.z);
-    glUniform3f(glGetUniformLocation(program_id, "Z"), skyData.Z.x, skyData.Z.y, skyData.Z.z);
-    glUniform3f(glGetUniformLocation(program_id, "sunDirection"), sunDirection.x, sunDirection.y, sunDirection.z);
+void SkyDome::setSkyData(GLuint p) {    
+    glUniform3f(glGetUniformLocation(p, "A"), skyData.A.x, skyData.A.y, skyData.A.z);
+    glUniform3f(glGetUniformLocation(p, "B"), skyData.B.x, skyData.B.y, skyData.B.z);
+    glUniform3f(glGetUniformLocation(p, "C"), skyData.C.x, skyData.C.y, skyData.C.z);
+    glUniform3f(glGetUniformLocation(p, "D"), skyData.D.x, skyData.D.y, skyData.D.z);
+    glUniform3f(glGetUniformLocation(p, "E"), skyData.E.x, skyData.E.y, skyData.E.z);
+    glUniform3f(glGetUniformLocation(p, "Z"), skyData.Z.x, skyData.Z.y, skyData.Z.z);
+    glUniform3f(glGetUniformLocation(p, "sunDirection"), sunDirection.x, sunDirection.y, sunDirection.z);
 }
 
 void SkyDome::recalculateSkyData() {
@@ -73,9 +71,6 @@ void SkyDome::recalculateSkyData() {
     skyData = computeSkyData(tmp, 2, tmp.y);
 }
 
-void SkyDome::recalculateModel() {
-    model = glm::translate(glm::mat4(1.0f), position);
-}
 
 void SkyDome::createSkyDome(size_t r, size_t s) {
     std::vector<Data> domeData = createSphere(r, s, radius);

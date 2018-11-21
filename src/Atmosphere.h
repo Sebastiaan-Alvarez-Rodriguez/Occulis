@@ -12,14 +12,15 @@
 
 class Atmosphere {
 public:
-    void init(GLuint skydome_pID, GLuint sun_pID);
-    void render(GLenum drawMode);
+    Atmosphere(const Camera* cam);
+    void render(GLenum drawMode, GLuint p_sun);
     void update(double deltatime);
-    void printSunDir();
+    void printSunPos();
     glm::vec3 getSunPosition() const;
+    void setProjection(glm::mat4 projection);
 private:
-    GLuint skydome_pID, sun_pID;
-    SkyDome dome;
     Sun sun;
+    SkyDome dome;
+    GLuint program_id_dome;
 };
 #endif

@@ -5,19 +5,16 @@
 #include "util.h"
 #include "error.hpp"
 
-void Sun::init(GLuint program_id) {
-    this->program_id = program_id;
-
-    glUseProgram(program_id);
-    //createSun(rings, sectors);
-    position = {0, -200, 0};
-    // recalculateModel();
-    // setModel();
+Sun::Sun(const Camera* cam): cam(cam) {
+    createSun(rings, sectors);
+    position = {0, -3000, 0};
+    recalculateModel();
     errCheck();
 }
 
-void Sun::render(GLenum drawMode) {
-    setModel();
+void Sun::render(GLenum drawMode, GLuint program_id) {
+    setModelView(program_id);
+    glDisable(GL_DEPTH_TEST);
     //enable vertices
     glBindBuffer(GL_ARRAY_BUFFER, sunVertexID);
     glEnableVertexAttribArray(0);
@@ -34,6 +31,7 @@ void Sun::render(GLenum drawMode) {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Sun::update(double deltatime) {
@@ -53,12 +51,19 @@ glm::vec3 Sun::getPosition() const {
     return position;
 }
 
-void Sun::setModel() {
+void Sun::setModelView(GLuint p) {
     glUniformMatrix4fv(
-        glGetUniformLocation(program_id, "model"), 
+        glGetUniformLocation(p, "model"), 
         1,
         GL_FALSE,
         &model[0][0]
+    );
+    glm::mat4 view = cam->getView();
+    glUniformMatrix4fv(
+        glGetUniformLocation(p, "view"), 
+        1,
+        GL_FALSE,
+        &view[0][0]
     );
 }
 
@@ -69,7 +74,8 @@ void Sun::recalculateModel() {
 void Sun::createSun(size_t r, size_t s) {
     std::vector<Data> sunData = createSphere(r, s, radius);
     for (size_t i = 0; i < sunData.size(); ++i)
-        sunData[i].color = {253,184,19,255};
+        sunData[i].color = {253,184,19,255};//make sun yellow/orange-ish
+    
     sunVertexID = 0;
     glGenBuffers(1, &sunVertexID);
     glBindBuffer(GL_ARRAY_BUFFER, sunVertexID);

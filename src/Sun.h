@@ -6,15 +6,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Camera.h"
+
 class Sun {
 public:
-    void init(GLuint program_id);
-    void render(GLenum drawMode);
+    Sun(const Camera* cam);
+    void render(GLenum drawMode, GLuint program_id);
     void update(double deltatime);
     glm::vec3 getDirection() const;
     glm::vec3 getPosition() const;
 private:
-    GLuint program_id;
     GLuint sunVertexID;
     
     glm::vec3 position;
@@ -26,7 +27,9 @@ private:
     float angle = M_PI/4 * 3;
     float orbit_radius = 3000.0f;
 
-    void setModel();
+    const Camera* cam;
+
+    void setModelView(GLuint program_id);
     
     void recalculateModel();
     void createSun(size_t r, size_t s);

@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Sun.h"
+#include "Camera.h"
 #include "preetham.h"
 /*Intel:
 
@@ -30,26 +31,24 @@
 
 class SkyDome {
 public:
-    void init(GLuint program_id, const Sun* sun);
-    void render(GLenum drawMode);
+    SkyDome(const Sun* sun, const Camera* cam);
+    void render(GLenum drawMode, GLuint program_id);
 private:
-    GLuint program_id;
-    GLuint domeVertexID;
+    const Sun* sun;
+    const Camera* cam;
+    
+    glm::vec3 sunDirection;
 
-    glm::vec3 position;
-    glm::mat4 model;
+    GLuint domeVertexID;
 
     float radius = 2000.0f;
     const size_t rings = 48, sectors = 48;
 
     PreethamSkyData skyData;
 
-    const Sun* sun;
-    glm::vec3 sunDirection;
 
-    void setModel();
-    void setSkyData();
-    void recalculateModel();
+    void setModelView(GLuint p);
+    void setSkyData(GLuint p);
     void recalculateSkyData();
     void createSkyDome(size_t r, size_t s);
 };

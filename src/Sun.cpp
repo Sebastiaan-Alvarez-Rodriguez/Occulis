@@ -7,7 +7,7 @@
 
 Sun::Sun(const Camera* cam): cam(cam) {
     createSun(rings, sectors);
-    position = {0, -3000, 0};
+    position = {0, -200, 0};
     recalculateModel();
     errCheck();
 }

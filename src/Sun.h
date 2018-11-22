@@ -29,7 +29,7 @@ private:
 
     const Camera* cam;
 
-    void setModelView(GLuint program_id);
+    void setModelView(GLuint p);
     
     void recalculateModel();
     void createSun(size_t r, size_t s);

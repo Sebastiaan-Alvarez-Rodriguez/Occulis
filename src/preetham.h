@@ -14,7 +14,7 @@ struct PreethamSkyData {
     glm::vec3 A, B, C, D, E, Z;
 };
 
-//as in section 2.3
+//as in section 2.3, with a slight adjustion for more realism
 inline float perez(float theta, float gamma, float A, float B, float C, float D, float E) {
     return (1.0f + A * std::exp(B / (std::cos(theta)+0.01f))) * (1.0f + C * std::exp(D * gamma) + E * std::cos(gamma) * std::cos(gamma));
 }

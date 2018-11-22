@@ -119,7 +119,7 @@ void Self::render() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(1,1,1,1);
-    glCullFace(GL_FRONT);
+//    glCullFace(GL_FRONT);
     //first pass (draw quad to find depth)
     glUseProgram(program_id_depth);
     //bind texture, to make output go to texture instead of screen
@@ -130,7 +130,7 @@ void Self::render() {
     computeLightSpace(program_id_depth);
     //render the terrain
     ter.render(GL_TRIANGLES, program_id_depth);
-    glCullFace(GL_BACK);
+//    glCullFace(GL_BACK);
     //2e pass
     glUseProgram(program_id_main);
     //bind buffer '0' -> draw to screen

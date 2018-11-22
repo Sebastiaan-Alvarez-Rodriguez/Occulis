@@ -51,7 +51,8 @@ void SkyDome::setModelView(GLuint p) {
     );
 }
 
-void SkyDome::setSkyData(GLuint p) {    
+void SkyDome::setSkyData(GLuint p) {
+    recalculateSkyData();
     glUniform3f(glGetUniformLocation(p, "A"), skyData.A.x, skyData.A.y, skyData.A.z);
     glUniform3f(glGetUniformLocation(p, "B"), skyData.B.x, skyData.B.y, skyData.B.z);
     glUniform3f(glGetUniformLocation(p, "C"), skyData.C.x, skyData.C.y, skyData.C.z);

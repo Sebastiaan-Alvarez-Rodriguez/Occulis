@@ -1,11 +1,7 @@
 #include "Camera.h"
 #include "error.hpp"
 
-void Camera::init(GLuint program_id_main, const char* viewname_main, GLuint program_id_atmos, const char* viewname_atmos) {
-    this->program_id_main = program_id_main;
-    this->program_id_atmos = program_id_atmos;
-    this->viewname_main = std::string(viewname_main);
-    this->viewname_atmos = std::string(viewname_atmos);
+Camera::Camera() {
     cam_update();
     errCheck();
 }
@@ -75,19 +71,5 @@ void Camera::cam_update() {
         cam_pos,  // Camera is at (256,300,256), in World Space
         cam_pos + glm::vec3(std::cos(cam_phi)*std::sin(cam_theta), std::cos(cam_theta), std::sin(cam_phi)*std::sin(cam_theta)),
         {0,1,0}  // Head is up (set to 0,-1,0 to look upside-down)
-    );
-    glUseProgram(program_id_main);
-    glUniformMatrix4fv(
-        glGetUniformLocation(program_id_main, "view"), 
-        1,
-        GL_FALSE,
-        &view[0][0]
-    );
-    glUseProgram(program_id_atmos);
-    glUniformMatrix4fv(
-        glGetUniformLocation(program_id_atmos, "view"), 
-        1,
-        GL_FALSE,
-        &view[0][0]
     );
 }

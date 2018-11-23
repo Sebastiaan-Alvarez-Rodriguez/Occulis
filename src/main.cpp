@@ -47,6 +47,7 @@ const SDL_Surface* createWindow() {
     if (glewInit() != GLEW_OK)
         throw std::runtime_error("GLEW init failed");
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     return screensurf;
 }
 

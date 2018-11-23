@@ -20,16 +20,22 @@ const static inline glm::vec4 getSurfaceNormal(const glm::vec4& a, const glm::ve
  return {glm::normalize(cross),1};
 }
 
-std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colormap) {
+std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colormap, size_t& size) {
     std::vector<Data> ret;
     size_t w = heightmap.width(), h = heightmap.height();
-    ret.reserve((w-1)*(h-1)*6);
+    size = (w-1)*(h-1)*6;
+    ret.reserve(size);
     for (size_t z = 0; z < h-1; ++z)
         for (size_t x = 0; x < w-1; ++x) {
             ret.push_back({
                 readVertexPixel(heightmap.getPixel(x, z), x, z), 
                 {0,0,0,0}, 
                 readColorPixel(colormap.getPixel(x, z))
+            });
+            ret.push_back({
+                readVertexPixel(heightmap.getPixel(x+1, z+1), x+1, z+1), 
+                {0,0,0,0}, 
+                readColorPixel(colormap.getPixel(x+1, z+1))
             });
             ret.push_back({
                 readVertexPixel(heightmap.getPixel(x+1, z), x+1, z), 
@@ -42,19 +48,14 @@ std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colorma
                 readColorPixel(colormap.getPixel(x+1, z+1))
             });
             ret.push_back({
-                readVertexPixel(heightmap.getPixel(x+1, z+1), x+1, z+1), 
+                readVertexPixel(heightmap.getPixel(x, z), x, z), 
                 {0,0,0,0}, 
-                readColorPixel(colormap.getPixel(x+1, z+1))
+                readColorPixel(colormap.getPixel(x, z))
             });
             ret.push_back({
                 readVertexPixel(heightmap.getPixel(x, z+1), x, z+1), 
                 {0,0,0,0}, 
                 readColorPixel(colormap.getPixel(x, z+1))
-            });
-            ret.push_back({
-                readVertexPixel(heightmap.getPixel(x, z), x, z), 
-                {0,0,0,0}, 
-                readColorPixel(colormap.getPixel(x, z))
             });
         }
     

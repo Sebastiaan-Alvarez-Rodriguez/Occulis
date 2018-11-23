@@ -18,14 +18,21 @@ public:
     void render();
 
 private:
-    constexpr static float cam_speed = 100.0f;
+    size_t screen_width = 800, screen_height = 600;
+    const float cam_speed = 100.0f;
+
     inputstate& in;
     Camera cam;
     Atmosphere atmosphere;
     Terrain ter;
-    GLuint program_id_main, program_id_atmos;
-    size_t screen_width = 800, screen_height = 600;
+
+    GLuint program_id_depth, program_id_main;
+
+    GLuint frame_buffer_id, depth_texture_id;
     bool wireframe_toggle = false;
-    void cameraInit();
+
+    void setProjections();
+    void frameBufferInit();
+    void computeLightSpace(GLuint p);
 };
 #endif

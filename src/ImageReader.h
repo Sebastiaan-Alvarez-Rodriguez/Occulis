@@ -9,6 +9,6 @@
 class ImageReader {
 public:
 
-    static std::vector<Data> read(const Image& heightmap, const Image& colormap);
+    static std::vector<Data> read(const Image& heightmap, const Image& colormap, size_t& size);
 };
 #endif

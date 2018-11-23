@@ -14,6 +14,7 @@ Sun::Sun(const Camera* cam): cam(cam) {
 
 void Sun::render(GLenum drawMode, GLuint program_id) {
     setModelView(program_id);
+    setSunPosition(program_id);
     glDisable(GL_DEPTH_TEST);
     //enable vertices
     glBindBuffer(GL_ARRAY_BUFFER, sunVertexID);
@@ -69,6 +70,10 @@ void Sun::setModelView(GLuint p) {
 
 void Sun::recalculateModel() {
     model = glm::translate(glm::mat4(1.0f), position);
+}
+
+void Sun::setSunPosition(GLuint p) {
+    glUniform3f(glGetUniformLocation(p, "sunLoc"), position.x, position.y, position.z);
 }
 
 void Sun::createSun(size_t r, size_t s) {

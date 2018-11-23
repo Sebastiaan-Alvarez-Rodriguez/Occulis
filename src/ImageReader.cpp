@@ -58,7 +58,7 @@ std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colorma
                 readColorPixel(colormap.getPixel(x, z+1))
             });
         }
-    
+
     for (size_t i = 0; i < ret.size(); i+=3) {
         ret[i].normal = ret[i+1].normal = ret[i+2].normal = 
             getSurfaceNormal(ret[i].vertex, ret[i+1].vertex, ret[i+2].vertex);

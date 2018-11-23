@@ -32,6 +32,7 @@ private:
     void setModelView(GLuint p);
     
     void recalculateModel();
+    void setSunPosition(GLuint p);
     void createSun(size_t r, size_t s);
 };
 #endif

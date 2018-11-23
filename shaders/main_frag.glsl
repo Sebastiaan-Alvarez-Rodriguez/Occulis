@@ -6,34 +6,38 @@ in vec4 color;
 in vec4 fragPosLightSpace;
 
 uniform sampler2D shadowMap;
-const vec3 light_color = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3 sunLoc;
+
+const vec4 light_color = vec4(1.0f, 1.0f, 1.0f,  1.0f);
 
 out vec4 out_color;
 
-const vec4 ambient_color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+const vec4 ambient_color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 const vec4 specular_color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 
 float calculateLight(vec4 fragPosLightSpace) {
-    const float bias = 0.0005;
+    if (sunLoc.y < 0)
+        return 0.3f;
+    const float bias = 0.0005f;
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords = projCoords * 0.5f + 0.5f;
 
-    if(projCoords.z > 1.0)
-        return 1.0;
+    if(projCoords.z > 1.0f)
+        return 1.0f;
 
-    float shadow = 0.0;
+    float light = 0.0f;
     float currentDepth = projCoords.z;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = 1.0f / textureSize(shadowMap, 0);
     for(int x = -1; x <= 1; ++x)
         for(int y = -1; y <= 1; ++y) {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth > pcfDepth+bias ? 0.3 : 1.0;
+            light += currentDepth > pcfDepth+bias ? 0.3f : 1.0f;
         }
-    shadow /= 9.0;
-    return shadow;
+    light /= 9.0f;
+    return light;
     // // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     // float closestDepth = texture(shadowMap, projCoords.xy).r; 
     // // get depth of current fragment from light's perspective
@@ -49,7 +53,7 @@ void main() {
     float visibility = calculateLight(fragPosLightSpace);
 
     vec4 regular_color = color/255.0f;
-    out_color = ambient_color + visibility * regular_color;
+    out_color = ambient_color * regular_color + visibility * regular_color;
     // out_color = vec4(
     //     ambient_color + 
     //     visibility * regular_color.xyz *

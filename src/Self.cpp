@@ -128,7 +128,9 @@ void Self::render() {
     //compute lightspace matrix (camera at sun position)
     computeLightSpace(program_id_depth);
     //render the terrain
+    
     ter.render(GL_TRIANGLES, program_id_depth);
+
     //2e pass
     glUseProgram(program_id_main);
     //bind buffer '0' -> draw to screen

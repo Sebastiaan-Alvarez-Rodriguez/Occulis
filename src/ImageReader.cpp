@@ -33,6 +33,11 @@ std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colorma
                 readColorPixel(colormap.getPixel(x, z))
             });
             ret.push_back({
+                readVertexPixel(heightmap.getPixel(x+1, z+1), x+1, z+1), 
+                {0,0,0,0}, 
+                readColorPixel(colormap.getPixel(x+1, z+1))
+            });
+            ret.push_back({
                 readVertexPixel(heightmap.getPixel(x+1, z), x+1, z), 
                 {0,0,0,0}, 
                 readColorPixel(colormap.getPixel(x+1, z))
@@ -43,19 +48,14 @@ std::vector<Data> ImageReader::read(const Image& heightmap, const Image& colorma
                 readColorPixel(colormap.getPixel(x+1, z+1))
             });
             ret.push_back({
-                readVertexPixel(heightmap.getPixel(x+1, z+1), x+1, z+1), 
+                readVertexPixel(heightmap.getPixel(x, z), x, z), 
                 {0,0,0,0}, 
-                readColorPixel(colormap.getPixel(x+1, z+1))
+                readColorPixel(colormap.getPixel(x, z))
             });
             ret.push_back({
                 readVertexPixel(heightmap.getPixel(x, z+1), x, z+1), 
                 {0,0,0,0}, 
                 readColorPixel(colormap.getPixel(x, z+1))
-            });
-            ret.push_back({
-                readVertexPixel(heightmap.getPixel(x, z), x, z), 
-                {0,0,0,0}, 
-                readColorPixel(colormap.getPixel(x, z))
             });
         }
     

@@ -6,14 +6,13 @@ in vec4 color;
 in vec4 fragPosLightSpace;
 
 uniform sampler2D shadowMap;
+const vec3 light_color = vec3(1.0f, 1.0f, 1.0f);
 
 out vec4 out_color;
 
-const vec3 ambient_color = vec3(0.1f, 0.1f, 0.1f);
-const vec3 specular_color = vec3(0.1f, 0.1f, 0.1f);
+const vec4 ambient_color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+const vec4 specular_color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
-const vec3 light_color = vec3(1.0f,1.0f,1.0f);
-const float light_power = 1;
 
 float calculateLight(vec4 fragPosLightSpace) {
     const float bias = 0.0005;
@@ -49,8 +48,8 @@ float calculateLight(vec4 fragPosLightSpace) {
 void main() {
     float visibility = calculateLight(fragPosLightSpace);
 
-    vec3 regular_color = vec3(color.x/255.0f, color.y/255.0f, color.z/255.0f);
-    out_color = vec4(ambient_color + visibility * regular_color, 1);
+    vec4 regular_color = color/255.0f;
+    out_color = ambient_color + visibility * regular_color;
     // out_color = vec4(
     //     ambient_color + 
     //     visibility * regular_color.xyz *

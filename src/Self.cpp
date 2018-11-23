@@ -41,8 +41,8 @@ void Self::frameBufferInit() {
     glGenTextures(1, &depth_texture_id);
     glBindTexture(GL_TEXTURE_2D, depth_texture_id);
     glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT,SHADOW_WIDTH,SHADOW_HEIGHT,0,GL_DEPTH_COMPONENT,GL_FLOAT,NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -119,7 +119,6 @@ void Self::render() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(1,1,1,1);
-//    glCullFace(GL_FRONT);
     //first pass (draw quad to find depth)
     glUseProgram(program_id_depth);
     //bind texture, to make output go to texture instead of screen
@@ -130,15 +129,14 @@ void Self::render() {
     computeLightSpace(program_id_depth);
     //render the terrain
     ter.render(GL_TRIANGLES, program_id_depth);
-//    glCullFace(GL_BACK);
     //2e pass
     glUseProgram(program_id_main);
     //bind buffer '0' -> draw to screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    atmosphere.render(drawMode, program_id_main);
 
+    glUseProgram(program_id_main);
     computeLightSpace(program_id_main);
     ter.render(drawMode, program_id_main);
-    
-    atmosphere.render(drawMode, program_id_main);
     errCheck();
 }

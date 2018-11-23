@@ -28,7 +28,7 @@ public:
     void move(movedir d, float amt);
     glm::mat4 getView() const;
 private:
-    glm::vec3 cam_pos = {200, 2000, 200};
+    glm::vec3 cam_pos = {200, 200, 200};
     glm::mat4 view;
     float cam_theta = M_PI /4*3, cam_phi = 0;
     float cam_speed = 50.0f;

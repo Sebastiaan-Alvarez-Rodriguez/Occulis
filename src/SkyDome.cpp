@@ -12,8 +12,6 @@ SkyDome::SkyDome(const Sun* sun, const Camera* cam): sun(sun), cam(cam) {
 void SkyDome::render(GLenum drawMode, GLuint program_id) {
     setModelView(program_id);
     setSkyData(program_id);
-
-    glDisable(GL_DEPTH_TEST);
     //enable vertices
     glBindBuffer(GL_ARRAY_BUFFER, domeVertexID);
     glEnableVertexAttribArray(0);
@@ -30,7 +28,6 @@ void SkyDome::render(GLenum drawMode, GLuint program_id) {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
-    glEnable(GL_DEPTH_TEST);
 errCheck();
 }
 

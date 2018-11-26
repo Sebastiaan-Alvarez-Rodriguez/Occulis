@@ -1,6 +1,7 @@
 #ifndef IMAGE
 #define IMAGE
 
+#include <cstddef>
 #include <vector>
 
 class Image {

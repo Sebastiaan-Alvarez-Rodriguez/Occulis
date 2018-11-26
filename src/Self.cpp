@@ -15,6 +15,7 @@ Self::Self(inputstate& i): in(i), atmosphere(&cam), ter(&cam) {
     glDepthFunc(GL_LESS);
     frameBufferInit();
     setProjections();
+    ter.addGrass({20, 20}, 10, 3);
     errCheck();
 }
  
@@ -29,6 +30,7 @@ void Self::setProjections() {
         &Projection[0][0]
     );
     atmosphere.setProjection(Projection);
+    ter.setProjection(Projection);
 }
 
 void Self::frameBufferInit() {
@@ -39,6 +41,7 @@ void Self::frameBufferInit() {
 
     depth_texture_id = 0;
     glGenTextures(1, &depth_texture_id);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, depth_texture_id);
     glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT,SHADOW_WIDTH,SHADOW_HEIGHT,0,GL_DEPTH_COMPONENT,GL_FLOAT,NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -57,6 +60,7 @@ void Self::frameBufferInit() {
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         throw std::runtime_error("Framebuffer is troubled");
 }
+
 
 void Self::update(int width, int height, double deltatime) {
     screen_width = width;
@@ -123,6 +127,7 @@ void Self::render() {
     glUseProgram(program_id_depth);
     //bind texture, to make output go to texture instead of screen
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
+    glActiveTexture(GL_TEXTURE0);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     //compute lightspace matrix (camera at sun position)
@@ -140,5 +145,7 @@ void Self::render() {
     glUseProgram(program_id_main);
     computeLightSpace(program_id_main);
     ter.render(drawMode, program_id_main);
+
+    ter.renderGrass(drawMode);
     errCheck();
 }

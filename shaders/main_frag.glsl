@@ -7,13 +7,12 @@ in vec4 fragPosLightSpace;
 
 uniform sampler2D shadowMap;
 uniform vec3 sunLoc;
+uniform vec3 sunColor;
 
-const vec4 light_color = vec4(1.0f, 1.0f, 1.0f,  1.0f);
 
 out vec4 out_color;
-
+const vec4 sunStrength = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 const vec4 ambient_color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
-const vec4 specular_color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 
 float calculateLight(vec4 fragPosLightSpace) {
@@ -38,22 +37,16 @@ float calculateLight(vec4 fragPosLightSpace) {
         }
     light /= 9.0f;
     return light;
-    // // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    // float closestDepth = texture(shadowMap, projCoords.xy).r; 
-    // // get depth of current fragment from light's perspective
-    // float currentDepth = projCoords.z;
-    // // check whether current frag pos is in shadow
-    // //+0.005 of + 0.0005
-    // float shadow = currentDepth > closestDepth+0.0005  ? 0.3 : 1.0;
-
-    // return shadow;
 }
 
 void main() {
     float visibility = calculateLight(fragPosLightSpace);
 
     vec4 regular_color = color/255.0f;
-    out_color = ambient_color * regular_color + visibility * regular_color;
+    out_color = 
+        ambient_color * regular_color + 
+        visibility * regular_color * vec4(sunColor/255.0f, 1.0f) * sunStrength;
+    ;
     // out_color = vec4(
     //     ambient_color + 
     //     visibility * regular_color.xyz *

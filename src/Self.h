@@ -33,6 +33,7 @@ private:
 
     void setProjections();
     void frameBufferInit();
+    void generateTextures();
     void computeLightSpace(GLuint p);
 };
 #endif

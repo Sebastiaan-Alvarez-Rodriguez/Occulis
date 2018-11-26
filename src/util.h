@@ -16,8 +16,8 @@ struct Data {
 inline std::vector<Data> createSphere(size_t rings, size_t sectors, float radius) {
     if (rings < 1 || sectors < 1)
         throw std::runtime_error("Sphere created with invalid parameters");
-    const float R = 1./(float)(rings-1);
-    const float S = 1./(float)(sectors-1);
+    const float R = 1.0f/(float)(rings-1);
+    const float S = 1.0f/(float)(sectors-1);
 
     std::vector<Data> ret;
     ret.reserve(rings*sectors *6);

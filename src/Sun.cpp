@@ -8,14 +8,16 @@
 Sun::Sun(const Camera* cam): cam(cam) {
     createSun(rings, sectors);
     position = {0, -200, 0};
+    lightColor = {0,0,0};
     recalculateModel();
+    recalculateLightColor();
     errCheck();
 }
 
 void Sun::render(GLenum drawMode, GLuint program_id) {
     setModelView(program_id);
     setSunPosition(program_id);
-    glDisable(GL_DEPTH_TEST);
+    setSunlightColor(program_id);
     //enable vertices
     glBindBuffer(GL_ARRAY_BUFFER, sunVertexID);
     glEnableVertexAttribArray(0);
@@ -32,7 +34,6 @@ void Sun::render(GLenum drawMode, GLuint program_id) {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void Sun::update(double deltatime) {
@@ -42,6 +43,7 @@ void Sun::update(double deltatime) {
     position.x = std::sin(angle) * orbit_radius;
     position.y = std::cos(angle) * orbit_radius;
     recalculateModel();
+    recalculateLightColor();
 }
 
 glm::vec3 Sun::getDirection() const {
@@ -69,11 +71,28 @@ void Sun::setModelView(GLuint p) {
 }
 
 void Sun::recalculateModel() {
-    model = glm::translate(glm::mat4(1.0f), position);
+    model = glm::translate(glm::mat4(1.0f), {position.x, position.y, position.z});
+}
+
+
+/*
+    full sun : 255,255,220
+    dawn/dusk, linear fade to : 255, 60, 60
+*/
+void Sun::recalculateLightColor() {
+    glm::vec3 loc = glm::normalize(position);
+    if (loc.y >= 0)//either dawn or dusk
+        lightColor = {255.0f, 60.0f+loc.y*195.0f,60.0f+loc.y*195.0f};
+    else if (loc.y >= -0.5f)
+        lightColor = {255.0f*(1.0f-loc.y -0.5f), 60.0f*(1.0f-loc.y -0.5f),60.0f*(1.0f-loc.y -0.5f)};
 }
 
 void Sun::setSunPosition(GLuint p) {
     glUniform3f(glGetUniformLocation(p, "sunLoc"), position.x, position.y, position.z);
+}
+
+void Sun::setSunlightColor(GLuint p) {
+    glUniform3f(glGetUniformLocation(p, "sunColor"), lightColor.x, lightColor.y, lightColor.z);
 }
 
 void Sun::createSun(size_t r, size_t s) {

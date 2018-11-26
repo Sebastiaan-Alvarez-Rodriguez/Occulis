@@ -7,6 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
+//https://www.solarsystemscope.com/textures/
+//https://www.google.com/search?q=moon+texture+3d+opengl&client=ubuntu&hs=b0s&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwili93sw-reAhUlDcAKHcUwBAYQ_AUIDigB&biw=1869&bih=951#imgrc=BSBRoCAzN5hCKM:
 
 class Sun {
 public:
@@ -19,6 +21,7 @@ private:
     GLuint sunVertexID;
     
     glm::vec3 position;
+    glm::vec3 lightColor;
     glm::mat4 model;
     
     float radius = 200.0f;
@@ -32,7 +35,9 @@ private:
     void setModelView(GLuint p);
     
     void recalculateModel();
+    void recalculateLightColor();
     void setSunPosition(GLuint p);
+    void setSunlightColor(GLuint p);
     void createSun(size_t r, size_t s);
 };
 #endif

@@ -43,7 +43,7 @@ void main() {
         0       0  0       1
         This matrix applies rotation and translation simultaniously
     */
-    vec4 _vertex =  (posRotMatrix *(vec4(1, scale*20, 1, 1) * point) + computeWindStuff());
+    vec4 _vertex =  (posRotMatrix *(vec4(1, scale*8, 1, 1) * point) + computeWindStuff());
     gl_Position = projection * view * model * _vertex;
     inColor = color * 0.7 * (point.y + 0.8);
     fragPosLightSpace = lightSpaceMatrix * model * _vertex;

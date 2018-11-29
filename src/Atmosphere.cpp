@@ -2,7 +2,10 @@
 
 #include "shader.hpp"
 #include "error.hpp"
-
+//idea:
+//make lightning  http://developer.download.nvidia.com/SDK/10/direct3d/Source/Lightning/doc/lightning_doc.pdf
+//  http://gamma.cs.unc.edu/LIGHTNING/lightning.pdf
+//  https://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
 Atmosphere::Atmosphere(const Camera* cam): sun(cam), dome(&sun, cam) {
     program_id_dome= LoadShaders("shaders/preetham_vertex.glsl", "shaders/preetham_frag.glsl");
     errCheck();

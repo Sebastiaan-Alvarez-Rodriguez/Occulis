@@ -7,7 +7,7 @@
 
 Sun::Sun(const Camera* cam): cam(cam) {
     createSun(rings, sectors);
-    position = {0, -200, 0};
+    position = {0, -20000, 0};
     lightColor = {0,0,0};
     recalculateModel();
     recalculateLightColor();
@@ -86,7 +86,7 @@ void Sun::recalculateModel() {
 void Sun::recalculateLightColor() {
     glm::vec3 loc = glm::normalize(position);
     // if (loc.y >= 0)//either dawn or dusk
-        lightColor = {255.0f, 90.0f+loc.y*155.0f,90.0f+loc.y*155.0f};
+        lightColor = {255.0f, 120.0f+loc.y*125.0f,120.0f+loc.y*125.0f};
     // else if (loc.y >= -0.5f)
         // lightColor = {255.0f*(1.0f-loc.y -0.5f), 60.0f*(1.0f-loc.y -0.5f),60.0f*(1.0f-loc.y -0.5f)};
 }

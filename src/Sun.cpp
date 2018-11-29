@@ -54,6 +54,10 @@ glm::vec3 Sun::getPosition() const {
     return position;
 }
 
+glm::vec3 Sun::getLightColor() const {
+    return lightColor;
+}
+
 void Sun::setModelView(GLuint p) {
     glUniformMatrix4fv(
         glGetUniformLocation(p, "model"), 
@@ -81,10 +85,10 @@ void Sun::recalculateModel() {
 */
 void Sun::recalculateLightColor() {
     glm::vec3 loc = glm::normalize(position);
-    if (loc.y >= 0)//either dawn or dusk
-        lightColor = {255.0f, 60.0f+loc.y*195.0f,60.0f+loc.y*195.0f};
-    else if (loc.y >= -0.5f)
-        lightColor = {255.0f*(1.0f-loc.y -0.5f), 60.0f*(1.0f-loc.y -0.5f),60.0f*(1.0f-loc.y -0.5f)};
+    // if (loc.y >= 0)//either dawn or dusk
+        lightColor = {255.0f, 90.0f+loc.y*155.0f,90.0f+loc.y*155.0f};
+    // else if (loc.y >= -0.5f)
+        // lightColor = {255.0f*(1.0f-loc.y -0.5f), 60.0f*(1.0f-loc.y -0.5f),60.0f*(1.0f-loc.y -0.5f)};
 }
 
 void Sun::setSunPosition(GLuint p) {

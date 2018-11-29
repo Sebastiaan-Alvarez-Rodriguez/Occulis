@@ -16,7 +16,7 @@ struct PreethamSkyData {
 
 //as in section 2.3, with a slight adjustion for more realism
 inline float perez(float theta, float gamma, float A, float B, float C, float D, float E) {
-    return (1.0f + A * std::exp(B / (std::cos(theta)+0.01f))) * (1.0f + C * std::exp(D * gamma) + E * std::cos(gamma) * std::cos(gamma));
+    return (1.0f + A * std::exp(B / (std::cos(theta)))) * (1.0f + C * std::exp(D * gamma) + E * std::cos(gamma) * std::cos(gamma));
 }
 //Absolute zenith luminance
 inline float zenith_luminance(float sunTheta, float turbidity) {

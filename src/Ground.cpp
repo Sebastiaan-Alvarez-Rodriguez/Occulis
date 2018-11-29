@@ -13,7 +13,7 @@ Ground::Ground(const Camera* cam): cam(cam) {
         width,
         height
     );
-
+    genHeightmap();
     glGenBuffers(1, &dataID);
     glBindBuffer(GL_ARRAY_BUFFER, dataID);
     glBufferData(
@@ -25,25 +25,9 @@ Ground::Ground(const Camera* cam): cam(cam) {
     errCheck();
 }
 
-GLuint Ground::genHeightmap() {
-    size_t size;
-    std::vector<float> data = ImageReader::readHeightmap(
-        Image("terrain/terrain_heightmap.png"),
-        size
-    );
-    GLuint genID = 0;
-    glActiveTexture(GL_TEXTURE1);
-    glGenTextures(1, &genID);
-    glBindTexture(GL_TEXTURE_2D, genID);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RED,width,height,0,GL_RED,GL_FLOAT,&data[0]);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    return genID;
-}
-
 void Ground::render(GLenum drawMode, GLuint program_id) {
     setModelView(program_id);
-
+    errCheck();
     //enable vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, dataID);
@@ -68,6 +52,18 @@ size_t Ground::getWidth() {
 
 size_t Ground::getHeight() {
     return height;
+}
+
+float Ground::getHeightAt(size_t x, size_t z) const {
+    return terrain_heightmap[z*(width-1) + x];
+}
+
+void Ground::genHeightmap() {
+    size_t size;
+    terrain_heightmap = ImageReader::readHeightmap(
+        Image("terrain/terrain_heightmap.png"),
+        size
+    );
 }
 
 void Ground::setModelView(GLuint p) {

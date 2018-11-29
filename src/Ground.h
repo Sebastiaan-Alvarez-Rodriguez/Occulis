@@ -13,17 +13,18 @@
 class Ground {
 public:
     Ground(const Camera* cam);
-    GLuint genHeightmap();
     void render(GLenum drawMode, GLuint program_id);
     size_t getWidth();
     size_t getHeight();
+    float getHeightAt(size_t x, size_t z) const;
 private:
     const Camera* cam;
 
     GLuint dataID;
-
+    std::vector<float> terrain_heightmap;
     size_t triangles, width, height;
 
+    void genHeightmap();
     void setModelView(GLuint p);
 };
 #endif

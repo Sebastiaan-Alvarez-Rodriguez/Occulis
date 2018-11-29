@@ -28,7 +28,6 @@ void SkyDome::render(GLenum drawMode, GLuint program_id) {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
-errCheck();
 }
 
 void SkyDome::setModelView(GLuint p) {

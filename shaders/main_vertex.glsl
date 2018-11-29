@@ -32,7 +32,7 @@ void main(){
     gl_Position = projection * view * model * _vertex;
 
     position = model*_vertex;
-    normal = transpose(inverse(model))*_normal;
+    normal = _normal;//transpose(inverse(model))*_normal
     color = _color;
     //Dit kan ook zonder model, en dan zelf een test4/ shade doen
     fragPosLightSpace = lightSpaceMatrix * model * _vertex;

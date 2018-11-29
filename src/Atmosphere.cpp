@@ -1,6 +1,5 @@
 #include "Atmosphere.h"
 
-
 #include "shader.hpp"
 #include "error.hpp"
 
@@ -19,6 +18,10 @@ errCheck();
 
 void Atmosphere::update(double deltatime) {
     sun.update(deltatime);
+}
+
+const Sun* Atmosphere::getSun() const {
+    return &sun;
 }
 
 glm::vec3 Atmosphere::getSunPosition() const {

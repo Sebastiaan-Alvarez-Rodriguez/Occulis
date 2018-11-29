@@ -4,9 +4,8 @@
 #include "shader.hpp"
 #include "error.hpp"
 
-Terrain::Terrain(const Camera* cam): cam(cam), ground(cam) {
+Terrain::Terrain(const Camera* cam, const Wind* wind, const Sun* sun): cam(cam), wind(wind), sun(sun), ground(cam) {
     program_id_grass=LoadShaders("shaders/grass_vertex.glsl", "shaders/grass_frag.glsl");
-    heightTexID = 0;
     errCheck();
 }
 
@@ -29,10 +28,9 @@ size_t Terrain::getHeight() {
 }
 
 void Terrain::addGrass(glm::vec2 pos, float radius, size_t amt) {
-    if (heightTexID == 0)
-        heightTexID = ground.genHeightmap();
-    grasses.push_back(Grass(cam, heightTexID, pos, radius, amt));
+    grasses.push_back(Grass(cam, wind, sun, &ground, pos, radius, amt));
 }
+
 void Terrain::setProjection(glm::mat4 projection) {
     glUseProgram(program_id_grass);
     glUniformMatrix4fv(
@@ -40,5 +38,15 @@ void Terrain::setProjection(glm::mat4 projection) {
         1,
         GL_FALSE,
         &projection[0][0]
+    );
+}
+
+void Terrain::setLightSpaceMatrix(glm::mat4 matrix) {
+    glUseProgram(program_id_grass);
+    glUniformMatrix4fv(
+        glGetUniformLocation(program_id_grass, "lightSpaceMatrix"),
+        1,
+        GL_FALSE,
+        &matrix[0][0]
     );
 }

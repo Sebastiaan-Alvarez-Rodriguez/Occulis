@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Atmosphere.h"
 #include "Terrain.h"
+#include "Wind.h"
 #include "inputstate.h"
 
 class Self {
@@ -25,6 +26,7 @@ private:
     Camera cam;
     Atmosphere atmosphere;
     Terrain ter;
+    Wind wind;
 
     GLuint program_id_depth, program_id_main;
 

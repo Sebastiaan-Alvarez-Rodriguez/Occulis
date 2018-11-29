@@ -17,6 +17,7 @@ public:
     void update(double deltatime);
     glm::vec3 getDirection() const;
     glm::vec3 getPosition() const;
+    glm::vec3 getLightColor() const;
 private:
     GLuint sunVertexID;
     

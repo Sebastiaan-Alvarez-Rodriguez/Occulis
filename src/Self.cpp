@@ -9,13 +9,13 @@
 #include "shader.hpp"
 #include "error.hpp"
 
-Self::Self(inputstate& i): in(i), atmosphere(&cam), ter(&cam) {
+Self::Self(inputstate& i): in(i), atmosphere(&cam), ter(&cam, &wind, atmosphere.getSun()) {
     program_id_depth= LoadShaders("shaders/depth_vertex.glsl", "shaders/depth_frag.glsl");
     program_id_main = LoadShaders("shaders/main_vertex.glsl", "shaders/main_frag.glsl");
     glDepthFunc(GL_LESS);
     frameBufferInit();
     setProjections();
-    ter.addGrass({20, 20}, 10, 3);
+    ter.addGrass({255, 255}, 255, 750000);
     errCheck();
 }
  
@@ -41,7 +41,6 @@ void Self::frameBufferInit() {
 
     depth_texture_id = 0;
     glGenTextures(1, &depth_texture_id);
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, depth_texture_id);
     glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT,SHADOW_WIDTH,SHADOW_HEIGHT,0,GL_DEPTH_COMPONENT,GL_FLOAT,NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -97,8 +96,8 @@ void Self::update(int width, int height, double deltatime) {
         atmosphere.update(deltatime);
     if (in.down[SDLK_z])
         atmosphere.update(-deltatime);
+    wind.update(deltatime);
 }
-
 void Self::computeLightSpace(GLuint p) {
     glm::mat4 View = glm::lookAt(
         atmosphere.getSunPosition(), //camera is at sun position
@@ -115,7 +114,10 @@ void Self::computeLightSpace(GLuint p) {
         GL_FALSE,
         &lightSpaceMatrix[0][0]
     );
+    ter.setLightSpaceMatrix(lightSpaceMatrix);
+    glUseProgram(p);
 }
+
 
 void Self::render() {
     errCheck();
@@ -149,3 +151,36 @@ void Self::render() {
     ter.renderGrass(drawMode);
     errCheck();
 }
+
+/*
+    GLenum drawMode = wireframe_toggle ? GL_LINES : GL_TRIANGLES;
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(1,1,1,1);
+
+    //first pass (draw quad to find depth)
+    glUseProgram(program_id_depth);
+
+    //bind texture, to make output go to texture instead of screen
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
+
+    //compute lightspace matrix (camera at sun position)
+    computeLightSpace();
+    //render the terrain
+    glUseProgram(program_id_depth);
+    ter.render(GL_TRIANGLES, program_id_depth);
+
+    //2e pass
+    //bind buffer '0' -> draw to screen
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glUseProgram(program_id_main);
+    atmosphere.render(drawMode, program_id_main);
+
+    glUseProgram(program_id_main);
+    computeLightSpace();
+    glUseProgram(program_id_main);
+    ter.render(drawMode, program_id_main);
+
+    // ter.renderGrass(drawMode);
+    errCheck();
+*/

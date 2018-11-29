@@ -15,8 +15,10 @@ public:
     Atmosphere(const Camera* cam);
     void render(GLenum drawMode, GLuint p_sun);
     void update(double deltatime);
-    void printSunPos();
+    const Sun* getSun() const;
+    
     glm::vec3 getSunPosition() const;
+    // glm::vec3 getSunLightColor() const;
     void setProjection(glm::mat4 projection);
 private:
     Sun sun;

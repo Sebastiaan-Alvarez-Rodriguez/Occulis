@@ -4,7 +4,7 @@
 #
 
 CXX            = g++ 
-WARNINGS       = -Wall -Wextra -pedantic -g
+WARNINGS       = -Wall -Wextra -pedantic -O3
 OTHERS         = `sdl-config --cflags`
 
 
@@ -21,7 +21,7 @@ I_WARNING_DIRS = -isystem lib
 
 CXXFLAGS       = $(IDIRS) -std=c++11 $(WARNINGS) $(OTHERS)
 CFLAGS         = $(IDIRS) `sdl-config --libs` -lGL -lGLU -lGLEW
-EXEC           = Self
+EXEC           = Landscape
 
 MAKEFLAGS      = -j
 

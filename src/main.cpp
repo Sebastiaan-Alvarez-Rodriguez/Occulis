@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
     const char* progName = argv[0];
     int c;
     while ((c = getopt_long(argc, argv, "f:g:h", long_options, NULL)) != -1){
-        int x;
+        int x = 0;
         try {
             size_t pos;
             if (optarg != NULL) {

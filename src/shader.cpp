@@ -23,12 +23,8 @@ std::string readFile(const char* file_path) {
 
 void compile(const char* file_path, GLuint shaderID) {
     // Read the shader code from the file
-    printf("Reading shader : %s\n", file_path);
-
     std::string shaderCode = readFile(file_path);
-
-    printf("Compiling shader : %s\n", file_path);
-    
+    // Compile shader
     const char* sourcePointer = shaderCode.c_str();
     glShaderSource(shaderID, 1, &sourcePointer , NULL);
     glCompileShader(shaderID);
@@ -54,15 +50,12 @@ GLuint createShader(const char* file_path, GLenum shadertype) {
 
 GLuint createProgram(std::vector<GLuint> ids) {
     // Link the program
-    printf("Linking program\n");
     GLuint program_id = glCreateProgram();
     for (GLuint id : ids)
         glAttachShader(program_id, id);
     glLinkProgram(program_id);
 
     // Check the program
-    printf("Checking program\n");
-
     int InfoLogLength;
     glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &InfoLogLength);
     if(InfoLogLength > 0) {
@@ -76,7 +69,6 @@ GLuint createProgram(std::vector<GLuint> ids) {
         glDetachShader(program_id, id);
     for(GLuint id : ids)
         glDeleteShader(id);
-    printf("Program complete\n");
     return program_id;
 }
 

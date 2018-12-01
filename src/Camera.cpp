@@ -35,8 +35,10 @@ void Camera::move(movedir d, float amt) {
             cam_pos.z += std::cos(cam_phi) * amt;
             break;
         case movedir::UP: 
+            cam_pos.y += amt;
             break;
         case movedir::DOWN: 
+            cam_pos.y -= amt;
             break;
         case movedir::FORWARD: 
             cam_pos.x += std::cos(cam_phi) * std::sin(cam_theta) * amt;
@@ -62,10 +64,10 @@ void Camera::cam_update() {
     else if(cam_phi > M_PI) 
         cam_phi = -M_PI;
 
-    if(cam_theta < 0.0001f) 
-        cam_theta = 0.0001f;
-    else if(cam_theta > M_PI - 0.0001f) 
-        cam_theta = M_PI - 0.0001f;
+    if(cam_theta < 0.001f) 
+        cam_theta = 0.001f;
+    else if(cam_theta > M_PI - 0.001f) 
+        cam_theta = M_PI - 0.001f;
 
     view = glm::lookAt(
         cam_pos,  // Camera is at (256,300,256), in World Space

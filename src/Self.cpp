@@ -9,13 +9,13 @@
 #include "shader.hpp"
 #include "error.hpp"
 
-Self::Self(inputstate& i): in(i), atmosphere(&cam), ter(&cam, &wind, atmosphere.getSun()) {
+Self::Self(inputstate& i, size_t init_width, size_t init_height, size_t grass_amt): in(i), screen_width(init_width), screen_height(init_height), atmosphere(&cam), ter(&cam, &wind, atmosphere.getSun()) {
     program_id_depth= LoadShaders("shaders/depth_vertex.glsl", "shaders/depth_frag.glsl");
     program_id_main = LoadShaders("shaders/main_vertex.glsl", "shaders/main_frag.glsl");
     glDepthFunc(GL_LESS);
     frameBufferInit();
     setProjections();
-    ter.addGrass({255, 255}, 255, 750000);
+    ter.addGrass({255, 255}, 255, grass_amt);
     errCheck();
 }
  
@@ -34,7 +34,7 @@ void Self::setProjections() {
 }
 
 void Self::frameBufferInit() {
-    const size_t SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
+    const size_t SHADOW_WIDTH = screen_width, SHADOW_HEIGHT = screen_height;
     frame_buffer_id = 0;
     glGenFramebuffers(1, &frame_buffer_id);
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
@@ -65,44 +65,46 @@ void Self::update(int width, int height, double deltatime) {
     screen_width = width;
     screen_height = height;
 
-    if (in.press[SDLK_w])
+    if (in.press[SDLK_t])
         wireframe_toggle = !wireframe_toggle;
 
     if (in.down[SDLK_j])
        cam.rotate(Camera::rotdir::LEFT, M_PI/2 * deltatime);
-
     if (in.down[SDLK_l])
         cam.rotate(Camera::rotdir::RIGHT, M_PI/2 * deltatime);
-
     if (in.down[SDLK_i])
         cam.rotate(Camera::rotdir::UP, M_PI/2 * deltatime);
-
     if (in.down[SDLK_k])
         cam.rotate(Camera::rotdir::DOWN, M_PI/2 * deltatime);
 
-    if (in.down[SDLK_t])
+    if (in.down[SDLK_w])
         cam.move(Camera::movedir::FORWARD, cam_speed*deltatime);
-    
-    if (in.down[SDLK_g])
+    if (in.down[SDLK_s])
         cam.move(Camera::movedir::BACKWARD, cam_speed*deltatime);
-
-    if (in.down[SDLK_f])
-        cam.move(Camera::movedir::LEFT, cam_speed*deltatime);
-
-    if (in.down[SDLK_h])
-        cam.move(Camera::movedir::RIGHT, cam_speed*deltatime);
-
     if (in.down[SDLK_a])
+        cam.move(Camera::movedir::LEFT, cam_speed*deltatime);
+    if (in.down[SDLK_d])
+        cam.move(Camera::movedir::RIGHT, cam_speed*deltatime);
+    if (in.down[SDLK_r])
+        cam.move(Camera::movedir::UP, cam_speed*deltatime);
+    if (in.down[SDLK_f])
+        cam.move(Camera::movedir::DOWN, cam_speed*deltatime);
+    
+    if (in.press[SDLK_g])
+        grass_toggle = !grass_toggle;
+
+    if (in.down[SDLK_y])
         atmosphere.update(deltatime);
-    if (in.down[SDLK_z])
+    if (in.down[SDLK_h])
         atmosphere.update(-deltatime);
+
     wind.update(deltatime);
 }
 void Self::computeLightSpace(GLuint p) {
     glm::mat4 View = glm::lookAt(
-        atmosphere.getSunPosition(), //camera is at sun position
-        {256,0,256},       //and looks at middle of quad
-        {0,1,0}            // up vector is up
+        atmosphere.getSunPosition(),            //camera is at sun position
+        {ter.getWidth()/2,0,ter.getHeight()/2}, //and looks at middle of terrain
+        {0,1,0}                                 // up vector is up
     );
     glm::mat4 Projection = glm::ortho(-256.0f, 256.0f, -256.0f, 256.0f, 1.0f, 10000.0f);
 
@@ -147,8 +149,8 @@ void Self::render() {
     glUseProgram(program_id_main);
     computeLightSpace(program_id_main);
     ter.render(drawMode, program_id_main);
-
-    ter.renderGrass(drawMode);
+    if (grass_toggle)
+        ter.renderGrass(drawMode);
     errCheck();
 }
 

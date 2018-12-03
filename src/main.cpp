@@ -51,12 +51,16 @@ void printControls() {
         << "\t\t backward:      S" << std::endl
         << "\t\t left:          A" << std::endl
         << "\t\t right:         D" << std::endl
-        << "\t atmosphere" << std::endl
-        << "\t\t increase time: Y" << std::endl
-        << "\t\t decrease time: H" << std::endl
-        << "\t Toggles" << std::endl
-        << "\t\t wireframe:     T" << std::endl
-        << "\t\t grass:         G" << std::endl
+        << "Atmosphere" << std::endl
+        << "\t increase time: Y" << std::endl
+        << "\t decrease time: H" << std::endl
+        << "Wind" <<std::endl
+        << "\t increase wind: O" << std::endl
+        << "\t decrease wind: P" << std::endl
+        << "Toggles" << std::endl
+        << "\t wireframe:     T" << std::endl
+        << "\t grass:         G" << std::endl
+        << "\t daycycles:     Z" << std::endl
         << "--------------------------------------------------------------------------------" << std::endl;
 }
 const SDL_Surface* createWindow() {

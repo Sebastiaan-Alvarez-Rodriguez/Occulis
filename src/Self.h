@@ -31,7 +31,7 @@ private:
     GLuint program_id_depth, program_id_main;
 
     GLuint frame_buffer_id, depth_texture_id;
-    bool wireframe_toggle = false, grass_toggle = true;
+    bool wireframe_toggle = false, grass_toggle = true, suncycle_toggle = true;
 
     void setProjections();
     void frameBufferInit();

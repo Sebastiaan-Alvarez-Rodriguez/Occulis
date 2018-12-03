@@ -13,10 +13,6 @@
 #include "Sun.h"
 #include "Ground.h"
 
-//https://github.com/dbaranchuk/grass-simulator-opengl/blob/master/GrassSimulator/Utility/include/Wind.h
-//https://github.com/rsteiger/realtime-grass/tree/master/shaders
-//instanced:: https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/10.1.instancing_quads/instancing_quads.cpp
-
 struct GData {
     std::vector<glm::vec4> positions;
     std::vector<glm::vec2> rotations;

@@ -59,12 +59,7 @@ void SkyDome::setSkyData(GLuint p) {
 }
 
 void SkyDome::recalculateSkyData() {
-    //params for below: glm::vec3 sun_direction, float turbidity, float normalizedSunY
     sunDirection = sun->getDirection();
-    //glm::normalize(sun->getPosition());
-    // auto tmp = sunDirection.x;
-    // sunDirection.x = sunDirection.y;
-    // sunDirection.y =tmp;
     skyData = computeSkyData(sunDirection, 2, sunDirection.y);
 }
 

@@ -7,8 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
-//https://www.solarsystemscope.com/textures/
-//https://www.google.com/search?q=moon+texture+3d+opengl&client=ubuntu&hs=b0s&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwili93sw-reAhUlDcAKHcUwBAYQ_AUIDigB&biw=1869&bih=951#imgrc=BSBRoCAzN5hCKM:
 
 class Sun {
 public:

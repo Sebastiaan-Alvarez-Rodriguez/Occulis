@@ -2,12 +2,10 @@
 
 #include "util.h"
 
-// https://github.com/dbaranchuk/grass-simulator-opengl/blob/master/GrassSimulator/Utility/src/main.cpp
-
 Grass::Grass(const Camera* cam, const Wind* wind, const Sun* sun, const Ground* ground, glm::vec2 pos, float radius, size_t amt): 
     cam(cam), wind(wind), sun(sun), ground(ground), position({pos.x-radius, 0, pos.y-radius, 1}), radius(radius), instances(amt) {
         
-    auto a = genMesh();//main:400
+    auto a = genMesh();
 
     glGenBuffers(1, &pointsBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, pointsBuffer);
@@ -61,35 +59,35 @@ Grass::Grass(const Camera* cam, const Wind* wind, const Sun* sun, const Ground* 
         &data.colors[0],
         GL_STATIC_DRAW
     );
-
-    //main:484 texture generation skipped. important?
 }
 
 void Grass::render(GLenum drawMode, GLuint program_id) {
     setModelView(program_id);
     setWData(program_id);
     setSunData(program_id);
+
+    glDisable(GL_CULL_FACE);
     //enable instance
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, pointsBuffer);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);//main:433
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
     //enable positions
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, grassPositions);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);//main:441
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
     glVertexAttribDivisor(1, 1);
 
     //enable rotations
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, grassRotations);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);//main:441
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glVertexAttribDivisor(2, 1);
 
     //enable scales
     glEnableVertexAttribArray(3);
     glBindBuffer(GL_ARRAY_BUFFER, grassScales);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 0, 0);//main:441
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 0, 0);
     glVertexAttribDivisor(3, 1);
 
     //enable colors
@@ -105,6 +103,7 @@ void Grass::render(GLenum drawMode, GLuint program_id) {
     glDisableVertexAttribArray(2);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
+    glEnable(GL_CULL_FACE);
 }
 
 std::vector<glm::vec4> Grass::genMesh() {
@@ -193,7 +192,6 @@ void Grass::setWData(GLuint program_id) {
         glGetUniformLocation(program_id, "baseAngle"), 
         a.baseAngle
     );
-    
 }
 
 void Grass::setSunData(GLuint p) {

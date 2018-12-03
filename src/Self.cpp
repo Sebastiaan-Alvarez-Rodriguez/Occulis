@@ -98,6 +98,16 @@ void Self::update(int width, int height, double deltatime) {
     if (in.down[SDLK_h])
         atmosphere.update(-deltatime);
 
+    if (in.down[SDLK_o])
+        wind.updateStrength(deltatime*4);
+    if (in.down[SDLK_p])
+        wind.updateStrength(-deltatime*4);
+
+    if (in.press[SDLK_z])
+        suncycle_toggle = !suncycle_toggle;
+
+    if (suncycle_toggle)
+        atmosphere.update(deltatime/8);
     wind.update(deltatime);
 }
 void Self::computeLightSpace(GLuint p) {

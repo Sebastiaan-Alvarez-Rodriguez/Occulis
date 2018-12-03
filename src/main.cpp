@@ -92,6 +92,8 @@ static void showHelp(const char *progName) {
     -f       fps rate      Maximum allowed fps rate
     --grass
     -g       grass amt     Amount of grass blades per patch
+    --limit
+    -l                     toggle of fps limit and counter
     --help
     -h                     Show this panel
 )HERE";
@@ -130,16 +132,19 @@ void mainEventHandler(inputstate* in, bool* running) {
 }
 
 int main(int argc, char** argv) {
+    bool toggle_lim = true;
+
     static struct option long_options[] = {
         {"fps", required_argument, NULL, 'f'},
         {"grass", required_argument, NULL, 'g'},
+        {"limit", required_argument, NULL, 'l'},
         {"help", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0}
     };
 
     const char* progName = argv[0];
     int c;
-    while ((c = getopt_long(argc, argv, "f:g:h", long_options, NULL)) != -1){
+    while ((c = getopt_long(argc, argv, "lf:g:h", long_options, NULL)) != -1){
         int x = 0;
         try {
             size_t pos;
@@ -176,13 +181,16 @@ int main(int argc, char** argv) {
                     grass_amt = (size_t) x;
                 }
                 break;
+            case 'l':
+                toggle_lim = false;
+                break;
             case 'h':
             default:
                 showHelp(progName);
                 return 0;
             
         }
-    }//while
+    }
     argc -= optind;
     argv += optind;
 
@@ -207,8 +215,10 @@ int main(int argc, char** argv) {
     auto frame_start = std::chrono::high_resolution_clock::now();
     bool running = true;
     while (running) {
-        fpsCounter(frames, program_start);//count fps
-        frameLimiter(fps_lim, frame_start); //limit frames
+        if (toggle_lim) {
+            fpsCounter(frames, program_start);//count fps
+            frameLimiter(fps_lim, frame_start); //limit frames
+        }
         mainEventHandler(&in, &running);
 
         newtime = SDL_GetTicks();

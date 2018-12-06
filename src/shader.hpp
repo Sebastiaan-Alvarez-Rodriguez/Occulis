@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+/*
+ * Basic shader-compiler helper-class
+ */
+
 std::string readFile(const char* file_path);
 
 void compile(const char* file_path, GLuint shaderID);

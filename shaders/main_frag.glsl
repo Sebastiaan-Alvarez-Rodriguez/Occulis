@@ -47,13 +47,5 @@ void main() {
         ambient_color * regular_color + 
         visibility * regular_color * vec4(sunColor/255.0f, 1.0f) * sunStrength;
     ;
-    // out_color = vec4(
-    //     ambient_color + 
-    //     visibility * regular_color.xyz *
-    //     light_color * light_power +//*0.4 +  //0.4 was cosTheta
-    //     visibility * specular_color * 
-    //     light_color * light_power, //* 0.05, //0.05 was pow(cosAlpha,5)
-    //     1
-    // );
 
 }

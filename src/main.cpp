@@ -5,7 +5,7 @@
 #include <GL/glu.h>
 #include <SDL/SDL.h>
 #include <iostream>
-#include <sstream>
+#include <string>
 #include <getopt.h>
 #include "Self.h"
 #include "inputstate.h"
@@ -16,25 +16,29 @@ size_t grass_amt = 500000;
 
 const SDL_Surface* screensurface;
 
+// Simple fps counter
 static inline void fpsCounter(size_t& frames, std::chrono::high_resolution_clock::time_point& program_start) {
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> dur = now - program_start;
     ++frames;
     if (dur.count() > 1) {
-        std::stringstream ss;
-        ss << "Landscape | fps: " << (frames / dur.count());
-        SDL_WM_SetCaption(ss.str().c_str(), NULL);
+        std::string x = "Landscape | fps: "+std::to_string((frames / dur.count()));
+        SDL_WM_SetCaption(x.c_str(), NULL);
         program_start = now;
         frames = 0;
     }
 }
 
+// Simple frame limiter. 
+// Required to use, as NVIDIA driver on linux completely ignores swap interval requests
 static inline void frameLimiter(int lim, std::chrono::high_resolution_clock::time_point& frame_start) {
     auto now = std::chrono::high_resolution_clock::now();
     std::this_thread::sleep_for(std::chrono::duration<float>(1 / (float)lim) - (now - frame_start));
     frame_start = std::chrono::high_resolution_clock::now();    
 }
 
+// Simple print method for controls, in case someone forgets the how-to's
+// or tries to grade this thing without wanting to dig into code
 void printControls() {
     std::cout 
         << "------------------------------------CONTROLS------------------------------------"<<std::endl
@@ -63,11 +67,12 @@ void printControls() {
         << "\t daycycles:     Z" << std::endl
         << "--------------------------------------------------------------------------------" << std::endl;
 }
+
+// Create a window, with configured attributes and modes and other sdl/openGL stuff
 const SDL_Surface* createWindow() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
         throw std::runtime_error("SDL init failed");
 
-    //set depth buffer to 24 bits for better precision
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
@@ -85,6 +90,7 @@ const SDL_Surface* createWindow() {
     return screensurf;
 }
 
+// Show help, in case of wrong user input or if requested
 static void showHelp(const char *progName) {
     std::cout << progName << " [-f <fps>] [-h]" << std::endl;
     std::cout << R"HERE(
@@ -99,7 +105,7 @@ static void showHelp(const char *progName) {
 )HERE";
 }
 
-
+// Handle key events
 void mainEventHandler(inputstate* in, bool* running) {
     SDL_Event sdlevent;
 
@@ -131,6 +137,7 @@ void mainEventHandler(inputstate* in, bool* running) {
     }
 }
 
+// Main function
 int main(int argc, char** argv) {
     bool toggle_lim = true;
 
@@ -216,8 +223,8 @@ int main(int argc, char** argv) {
     bool running = true;
     while (running) {
         if (toggle_lim) {
-            fpsCounter(frames, program_start);//count fps
-            frameLimiter(fps_lim, frame_start); //limit frames
+            fpsCounter(frames, program_start);
+            frameLimiter(fps_lim, frame_start);
         }
         mainEventHandler(&in, &running);
 

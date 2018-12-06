@@ -20,7 +20,6 @@ Self::Self(inputstate& i, size_t init_width, size_t init_height, size_t grass_am
 }
  
 void Self::setProjections() {
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) screen_width / (float) screen_height, 0.1f, 100000.0f);
     glUseProgram(program_id_main);
     glUniformMatrix4fv(
@@ -55,7 +54,6 @@ void Self::frameBufferInit() {
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // Always check that our framebuffer is ok
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         throw std::runtime_error("Framebuffer is troubled");
 }
@@ -110,13 +108,14 @@ void Self::update(int width, int height, double deltatime) {
         atmosphere.update(deltatime/8);
     wind.update(deltatime);
 }
+
 void Self::computeLightSpace(GLuint p) {
     glm::mat4 View = glm::lookAt(
         atmosphere.getSunPosition(),            //camera is at sun position
         {ter.getWidth()/2,0,ter.getHeight()/2}, //and looks at middle of terrain
         {0,1,0}                                 // up vector is up
     );
-    glm::mat4 Projection = glm::ortho(-256.0f, 256.0f, -256.0f, 256.0f, 1.0f, 10000.0f);
+    glm::mat4 Projection = glm::ortho(-(float)ter.getWidth()/2, (float)ter.getWidth()/2, -(float)ter.getHeight()/2, (float)ter.getHeight()/2, 1.0f, 10000.0f);
 
     glm::mat4 lightSpaceMatrix = Projection * View;
 
@@ -130,13 +129,13 @@ void Self::computeLightSpace(GLuint p) {
     glUseProgram(p);
 }
 
-
 void Self::render() {
     errCheck();
     GLenum drawMode = wireframe_toggle ? GL_LINES : GL_TRIANGLES;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(1,1,1,1);
+
     //first pass (draw quad to find depth)
     glUseProgram(program_id_depth);
     //bind texture, to make output go to texture instead of screen
@@ -150,7 +149,7 @@ void Self::render() {
     
     ter.render(GL_TRIANGLES, program_id_depth);
 
-    //2e pass
+    //second pass
     glUseProgram(program_id_main);
     //bind buffer '0' -> draw to screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -163,36 +162,3 @@ void Self::render() {
         ter.renderGrass(drawMode);
     errCheck();
 }
-
-/*
-    GLenum drawMode = wireframe_toggle ? GL_LINES : GL_TRIANGLES;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(1,1,1,1);
-
-    //first pass (draw quad to find depth)
-    glUseProgram(program_id_depth);
-
-    //bind texture, to make output go to texture instead of screen
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
-
-    //compute lightspace matrix (camera at sun position)
-    computeLightSpace();
-    //render the terrain
-    glUseProgram(program_id_depth);
-    ter.render(GL_TRIANGLES, program_id_depth);
-
-    //2e pass
-    //bind buffer '0' -> draw to screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glUseProgram(program_id_main);
-    atmosphere.render(drawMode, program_id_main);
-
-    glUseProgram(program_id_main);
-    computeLightSpace();
-    glUseProgram(program_id_main);
-    ter.render(drawMode, program_id_main);
-
-    // ter.renderGrass(drawMode);
-    errCheck();
-*/

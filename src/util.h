@@ -9,14 +9,20 @@
 #include<vector>
 #include <stdexcept>
 
+/*
+ * Utility class, to offshore structs/functions that would otherwise be duplicated
+ */
+
 struct Data {
     glm::vec4 vertex, normal, color;
 };
 
+// Compute random size_t between min and max (both inclusive)
 inline size_t randuint(size_t min, size_t max) {
     return std::rand()%(max-min + 1) + min;
 }
 
+// Create a sphere with given rings and sectors, and radius
 inline std::vector<Data> createSphere(size_t rings, size_t sectors, float radius) {
     if (rings < 1 || sectors < 1)
         throw std::runtime_error("Sphere created with invalid parameters");

@@ -10,15 +10,22 @@
 #include "SkyDome.h"
 #include "Sun.h"
 
+/*
+ * Representation of a atmosphere, which consists of a sun and a skydome
+ */
 class Atmosphere {
 public:
     Atmosphere(const Camera* cam);
+
     void render(GLenum drawMode, GLuint p_sun);
+
+    // Update function to update sun position
     void update(double deltatime);
+
+    // Basic functions to return sun or sundata
     const Sun* getSun() const;
-    
     glm::vec3 getSunPosition() const;
-    // glm::vec3 getSunLightColor() const;
+    
     void setProjection(glm::mat4 projection);
 private:
     Sun sun;

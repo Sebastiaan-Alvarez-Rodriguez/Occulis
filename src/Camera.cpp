@@ -70,8 +70,8 @@ void Camera::cam_update() {
         cam_theta = M_PI - 0.001f;
 
     view = glm::lookAt(
-        cam_pos,  // Camera is at (256,300,256), in World Space
+        cam_pos,
         cam_pos + glm::vec3(std::cos(cam_phi)*std::sin(cam_theta), std::cos(cam_theta), std::sin(cam_phi)*std::sin(cam_theta)),
-        {0,1,0}  // Head is up (set to 0,-1,0 to look upside-down)
+        {0,1,0}
     );
 }

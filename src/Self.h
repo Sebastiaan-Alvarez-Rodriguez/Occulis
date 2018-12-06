@@ -10,17 +10,21 @@
 #include "Wind.h"
 #include "inputstate.h"
 
+/*
+ * Main drawing handler. Sets up all required objects, and provides a lot of
+ * required data, such as Projection matrices.
+ */
 class Self {
 public:
     Self(inputstate& i, size_t init_width, size_t init_height, size_t grass_amt);
-    //called before each render, deltatime is in seconds
+    // Updates atmosphere and wind, and checks for user button input
     void update(int width, int height, double deltatime);
-    //render the scene
+
     void render();
 
 private:
     inputstate& in;
-    size_t screen_width = 800, screen_height = 600;
+    size_t screen_width = 1920, screen_height = 1080;
     const float cam_speed = 100.0f;
 
     Camera cam;
@@ -33,9 +37,11 @@ private:
     GLuint frame_buffer_id, depth_texture_id;
     bool wireframe_toggle = false, grass_toggle = true, suncycle_toggle = true;
 
+    // Sets projection matrices for a few shaders (These projections never change)
     void setProjections();
+    // Initialize framebuffer, for creating a depth-texture
     void frameBufferInit();
-    void generateTextures();
+    // Computes projection times view matrix for depth texture
     void computeLightSpace(GLuint p);
 };
 #endif

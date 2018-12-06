@@ -1,6 +1,5 @@
 #version 330 core
-//  http://developer.amd.com/wordpress/media/2012/10/i3dGrassFINAL.pdf
-//  http://developer.download.nvidia.com/books/HTML/gpugems/gpugems_ch07.html
+
 in vec4 point;
 in vec4 position;
 in vec2 rotation;
@@ -11,14 +10,16 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform mat4 lightSpaceMatrix; //new-check
+uniform mat4 lightSpaceMatrix;
+
 uniform vec4 direction;
 uniform float strength;
 uniform float baseAngle;
 
 out vec4 inColor;
-out vec4 fragPosLightSpace; //new-check
+out vec4 fragPosLightSpace;
 
+// Compute all wind-based movements of grass here
 vec4 computeWindStuff() {
     if (point.y * scale < 0.1)
         return vec4(0,0,0,0);
@@ -34,14 +35,13 @@ void main() {
     posRotMatrix[3][0] = position.x;
     posRotMatrix[3][1] = position.y;
     posRotMatrix[3][2] = position.z;
-
     /*
-        Stolen from my first homework assignment
+        Visualization of above matrix:
         rot[0]  0 -rot[1]  posX
         0       1  0       posY
         rot[1]  0  rot[0]  posZ
         0       0  0       1
-        This matrix applies rotation and translation simultaniously
+        This matrix applies rotation and translation simultaniously, which is efficient
     */
     vec4 _vertex =  (posRotMatrix *(vec4(1, scale*8, 1, 1) * point) + computeWindStuff());
     gl_Position = projection * view * model * _vertex;

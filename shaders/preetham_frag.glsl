@@ -7,6 +7,7 @@ out vec4 _color;
 uniform vec3 A, B, C, D, E, Z;
 uniform vec3 sunDirection;
 
+// Perez as described by Preetham et al. Please see report
 vec3 perez(float cos_theta, float gamma, float cos_gamma, vec3 A, vec3 B, vec3 C, vec3 D, vec3 E) {
     return (1 + A * exp(B / (cos_theta + 0.01))) * (1 + C * exp(D * gamma) + E * cos_gamma * cos_gamma);
 }

@@ -5,11 +5,12 @@ in vec4 fragPosLightSpace;
 
 out vec4 outColor;
 
-uniform sampler2D shadowMap;//new-check
-uniform vec3 sunLoc;//new-check
-uniform vec3 sunColor;//new-check
+uniform sampler2D shadowMap;
 
+uniform vec3 sunLoc;
+uniform vec3 sunColor;
 const vec4 sunStrength = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+
 const vec4 ambient_color = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 
 float calculateLight(vec4 fragPosLightSpace) {

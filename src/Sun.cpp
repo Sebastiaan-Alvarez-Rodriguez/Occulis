@@ -78,17 +78,10 @@ void Sun::recalculateModel() {
     model = glm::translate(glm::mat4(1.0f), {position.x, position.y, position.z});
 }
 
-
-/*
-    full sun : 255,255,220
-    dawn/dusk, linear fade to : 255, 60, 60
-*/
 void Sun::recalculateLightColor() {
     glm::vec3 loc = glm::normalize(position);
-    // if (loc.y >= 0)//either dawn or dusk
-        lightColor = {255.0f, 120.0f+loc.y*125.0f,120.0f+loc.y*125.0f};
-    // else if (loc.y >= -0.5f)
-        // lightColor = {255.0f*(1.0f-loc.y -0.5f), 60.0f*(1.0f-loc.y -0.5f),60.0f*(1.0f-loc.y -0.5f)};
+    
+    lightColor = {255.0f, 120.0f+loc.y*125.0f,120.0f+loc.y*125.0f};
 }
 
 void Sun::setSunPosition(GLuint p) {

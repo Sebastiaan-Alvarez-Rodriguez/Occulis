@@ -3,14 +3,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+//convert heightmap pixel to vertex
 const static inline glm::vec4 readVertexPixel(const Image::Pixel& p, size_t x, size_t z) {
     return {x, p.y, z, 1};
 }
 
+//convert color pixel to glm::vec4 color
 const static inline glm::vec4 readColorPixel(const Image::Pixel& p) {
     return {p.x, p.y, p.z, p.w};
 }
 
+//compute normal for triangle
 const static inline glm::vec4 getSurfaceNormal(const glm::vec4& a, const glm::vec4& b, const glm::vec4& c){
   
  glm::vec3 polyVector1 = {b.x - a.x, b.y - a.y, b.z - a.z};

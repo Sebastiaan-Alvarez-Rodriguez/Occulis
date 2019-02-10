@@ -75,4 +75,5 @@ Two things are described here: startup (commandline) commands and in-application
 ## Acknowledgments
 
 * Thanks to [Snektron](https://github.com/Snektron) for helping out when needed
-
+* Thanks to [g-truc](https://github.com/g-truc) for the creation of GLM
+* Thanks to [nigels-com](https://github.com/nigels-com/) for the creation of GLEW

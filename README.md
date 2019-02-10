@@ -57,16 +57,16 @@ Two things are described here: startup (commandline) commands and in-application
     * S - backward
     * A - left
     * D - right
-  * Atmosphere
-    * Y - increase time
-    * H - decrease time
-  * Wind
-    * O - increase wind
-    * P - decrease wind
-  * Toggles
-    * T - wireframe
-    * G - grass
-    * Z - daycycles
+* Atmosphere
+  * Y - increase time
+  * H - decrease time
+* Wind
+  * O - increase wind
+  * P - decrease wind
+* Toggles
+  * T - wireframe
+  * G - grass
+  * Z - daycycles
 
 ## Authors
 

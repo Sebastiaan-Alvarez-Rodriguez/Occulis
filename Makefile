@@ -3,7 +3,7 @@
 # Sebastiaan Alvarez Rodriguez
 #
 
-CXX            = g++ 
+CXX           ?= g++ 
 WARNINGS       = -Wall -Wextra -pedantic -O3
 OTHERS         = `sdl-config --cflags`
 

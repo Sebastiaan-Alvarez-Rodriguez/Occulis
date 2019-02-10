@@ -16,6 +16,7 @@ The following is required:
 * OpenGL 3.3 or later
 * Any C++ compiler capable of compiling C++11, e.g. G++ 7 (part of gcc)
 * Any builder tool which understands a simple Makefile, e.g. GNU make
+* GLEW
 * SDL version 1 or up (2 or higher recommended)
 
 ### Installing

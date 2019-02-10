@@ -21,7 +21,7 @@ I_WARNING_DIRS = -isystem lib
 
 CXXFLAGS       = $(IDIRS) -std=c++11 $(WARNINGS) $(OTHERS)
 CFLAGS         = $(IDIRS) `sdl-config --libs` -lGL -lGLU -lGLEW
-EXEC           = Landscape
+EXEC           = Occulis
 
 MAKEFLAGS      = -j
 
